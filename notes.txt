@@ -1,8 +1,3 @@
-
-
-
-        ====================================================================== DAY01 CLOSE ========================================================================
-
 requirement:
 ------------
 
@@ -11,7 +6,7 @@ requirement:
 3. start the httpd service.
 
 Sol:
----------
+----
 
 1. ansible all -b -m yum -a "name=httpd state=present"
 
@@ -58,13 +53,12 @@ Example
 
 
 
-
 How to run a playbook?
 ------------------------
 
 ansible-playbook ping.yaml
 
-ansible-playbook ping.yaml --syntax-check
+ansible-playbook ping.yaml --> syntax-check
 
 
 IQ] can you write a ansible play-book to create file to all host machines.
