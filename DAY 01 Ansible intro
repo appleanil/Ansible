@@ -1,0 +1,590 @@
+Ansible
+=======
+
+   Linux 
+   Shell scripting
+   SCM tools: git [github, bitbucket, gitlab]
+   Build tools: maven, gradle, Ant
+   Code quality: SonarQube
+   Artifactory or repository tools: nexus, jfrog
+   Application servers: tomcat, jboss, weblogic
+   Web servers: Apache httpd, nginx, Haproxy
+   CI CD tools: Jenkins, bomboo, travis ci
+   Containerization tools: Docker, Rocket
+   Container orchestration tools: K8s, openshift, docker-swarm
+
+   Configuration management tools: Ansible, puppet, cheff 
+
+
+
+
+
+NOTE:
+By using configuration management tools , We can configure “N” number of servers using single machine [configuration server]
+
+Ansible ఒక automation tool. ఇది ఒకేసారి multiple servers లో software install, service start, user create చేయడానికి ఉపయోగపడుతుంది.
+
+
+
+
+
+
+
+Introduction
+===========
+   Ansible is an open source, a Configuration Management Tool and Deployment tool, maintained by Redhat.
+
+   The main components of Ansible are playbooks, configuration management, deployment.
+
+   Ansible uses playbooks to deploy, manage, build, test and configure anything from full server environments to custom compiled source code for applications.
+
+   Ansible was written in Python.
+
+
+
+
+
+
+Configuration can be any task which we can perform on servers (hosts). It can be
+
+1)  Install/Update/Uninstalling software (packages)
+2)  Copy files. Changing the permissions on the files or directories.
+3)  Start/Stop/ Restart the services
+4)  Creating / deleting the users..........
+
+
+
+
+
+
+
+Various Configuration Management Tools
+======================================
+
+•   Ansible
+•   Chef
+•   Puppet
+•   Salt Stack
+
+
+
+
+
+Ansible Features
+================
+
+   Ansible configure machines in an agent-less manner using SSH.
+   Built on top of Python and hence provides a lot of Python’s functionality. YAML-Based Playbooks
+   Uses SSH for secure connections.
+   Follows Push based architecture for sending configurations.
+
+
+IQ]   Pull Based vs Push Based
+
+Tools like Puppet and Chef are pull based.
+Agents on the server periodically checks for the configuration information from central server (Master).
+
+Ansible is push based.
+Central server pushes the configuration information on target servers. You control when the changes are made on the servers.
+
+
+
+
+
+Ansible Architecture
+=====================
+
+
+https://www.google.com/search?sca_esv=8536d3cccb765549&sca_upv=1&rlz=1C1UEAD_enIN1101IN1102&sxsrf=ADLYWIK0P5dFDyf9SS8wj0ACVkOY-eTgQg:
+1727466226227&q=ansible+architecture&udm=2&fbs=AEQNm0DYVld7NGDZ8Pi819Yg8r6em07j6rW9d2jUMtr8MB7hthlxj_a5JB7GtKl9Rvi8UOrX6vOKeE8ctU8C4v5SDrHEsrg
+UOOFp5HvlkBZf4yVP83YajKnrlhAJvHG8uQnJWlvuYz8LvE_lwESvEPu-1v94fKd9xhS49UTuNSe7CMY7I5AuGmdDN0lv5iId0gIyD9wyA5aKEve0q31Gi2kwmyWtccpVrQ&sa=X&ved=
+2ahUKEwiolpqW8eOIAxW8R2wGHdidNlUQtKgLegQILRAB&biw=1440&bih=825&dpr=2#vhid=DpiNvVdi7i47aM&vssid=mosaic
+
+
+Host Inventory:
+===============
+
+
+In Ansible, the host inventory is a file that defines the hosts (machines) that Ansible will manage. This file can be in various formats, 
+but the most common is the INI format. You can also use YAML format for more complex structures.
+
+Some important points in Inventory file.
+-   Comments begin with the '#' character
+-   Blank lines are ignored
+-   Groups of hosts are delimited by [header] elements
+-   You can enter hostnames or ip addresses
+-   A hostname/ip can be a member of multiple groups
+-   Ungrouped hosts are specifying before any group headers, like below
+
+
+kkdevops.com
+192.168.0.9
+192.168.9.6
+
+[webservers] 
+#192.168.122.1
+192.168.122.2
+192.168.122.3
+kkdevops.com
+
+
+[dbservers]
+192.168.122.4
+192.168.122.5
+192.168.122.2
+
+
+
+
+
+--> We have two types of inventories
+
+1. static inventory
+-------------------
+It is a file in the ansible server. It contains the host machine details, Whenever we want to add/remove server information 
+we have to update the static inventory file manually.
+
+
+
+2. dynamic inventory
+--------------------
+
+It is an inventory that automatically fetches host information from external sources such as cloud providers, CMDBs, or scripts.
+The server details are generated dynamically at runtime, so manual updates are not required.
+
+Dynamic inventory is commonly used in cloud environments where servers are frequently created and terminated.
+
+Examples of sources: AWS (EC2), Azure, GCP
+
+Custom scripts (Python, Shell)
+
+
+Advantages:
+-----------
+
+Automatically updates host information
+
+Reduces manual effort and human errors
+
+Ideal for large-scale and cloud-based infrastructures
+
+NOTE: default inventory path: /etc/ansible/hosts
+
+Ansible playbook లో plays, tasks, modules, variables, handlers, conditionals, loops ఉంటాయి. ఇవి servers automation ని easy గా చేస్తాయి.
+
+
+
+
+PlayBooks
+==========
+
+-> An Ansible playbook is a YAML file that defines a set of tasks to be executed on one or more  hosts. 
+
+
+Key Components of a Playbook
+----------------------------
+
+1. Plays: Each play in a playbook maps a group of hosts to a set of tasks. A playbook can contain multiple plays.
+
+2. Tasks: These are the actions to be performed on the hosts. Each task typically uses an Ansible module to define what to do
+   (e.g., installing a package, copying files, or executing commands).
+
+3. Modules: Ansible comes with many built-in modules that provide functionality for managing different systems and services.
+
+4. Variables: You can define variables within playbooks to manage values dynamically and make your playbooks more flexible.
+
+5. Handlers: Handlers are special tasks that run only when notified by another task. They are often used for restarting services after a configuration change.
+
+6. Conditionals and Loops: Playbooks support conditionals (e.g., when statements) and loops (e.g., with_items) to control the flow of tasks based on 
+   specific conditions or to iterate over a list.
+
+
+Example:
+--------
+
+- name: Install Git on all servers
+  hosts: all
+  tasks:
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+
+
+Example:
+--------
+
+- name: Install Unzip on Database Servers
+  hosts: dbservers
+  tasks:
+    - name: Install Unzip
+      yum:
+        name: unzip
+        state: present
+
+
+
+1️⃣ Plays అంటే ఏమిటి?
+
+ఏ servers (hosts) మీద
+
+ఏ పనులు (tasks) చేయాలో చెప్పే భాగం
+
+📌 ఒక playbook లో ఒకటి లేదా ఎక్కువ plays ఉండొచ్చు
+
+🧠 Example (తెలుగులో):
+
+ఈ servers లో nginx install చేయాలి  👉 ఇది ఒక play
+
+
+
+
+2️⃣ Tasks అంటే ఏమిటి?
+
+👉 Task అంటే:
+
+server లో చేయాల్సిన ఒక పని
+
+ఉదాహరణ:  software install చేయడం, service start చేయడం, file copy చేయడం
+
+📌 ఒక play లో చాలా tasks ఉండొచ్చు
+
+🧠 Example:  Task 1: nginx install, Task 2: nginx start
+
+
+
+
+3️⃣ Modules అంటే ఏమిటి?
+
+Ansible లో already ఉన్న tools / functions
+
+👉 ప్రతి task ఒక module ఉపయోగిస్తుంది
+
+Common modules:
+
+yum → software install
+
+service → service start/stop
+
+copy → files copy
+
+user → user create
+
+🧠 Simple మాటల్లో:
+
+Module = పని చేయడానికి ఉపయోగించే tool
+
+
+
+
+4️⃣ Variables అంటే ఏమిటి?
+
+values ని change చేయడానికి ఉపయోగిస్తారు
+
+ఉదాహరణ: software name, port number, username
+
+🧠 Example:
+package_name: nginx
+
+👉 తర్వాత:
+
+name: "{{ package_name }}"
+
+📌 ఒకసారి change చేస్తే everywhere update అవుతుంది 👍
+
+
+
+
+
+5️⃣ Handlers అంటే ఏమిటి?
+
+అవసరం ఉన్నప్పుడే run అయ్యే tasks
+
+service restart చేయడానికి ఉపయోగిస్తారు
+
+🧠 Real Example: config file change అయింది
+
+అప్పుడు మాత్రమే nginx restart కావాలి
+
+👉 everyday restart అవసరం లేదు ❌
+
+
+
+
+6️⃣ Conditionals & Loops అంటే ఏమిటి?
+
+👉 Condition true అయితేనే task run అవుతుంది
+
+🧠 Example: OS Ubuntu అయితేనే install చేయాలి
+
+when: ansible_os_family == "Debian"
+
+🔹 Loops
+
+👉 ఒకే పని చాలా items మీద repeat చేయడానికి
+
+🧠 Example: nginx, git, docker
+
+👉 3 softwares install చేయాలి
+
+loop:
+  - nginx
+  - git
+  - docker
+
+
+
+
+Easy Telugu Reading Style (Audio-like 😄)
+
+Play అంటే –--------- ఏ server లో ఏ పని చేయాలో చెప్పడం
+
+Task అంటే –----------server లో చేసే ఒక పని
+
+Module అంటే –------- ఆ పని చేయడానికి ఉపయోగించే tool
+
+Variable అంటే –----- change అయ్యే value
+
+Handler అంటే –------ అవసరం ఉన్నప్పుడే run అయ్యే task
+
+Condition అంటే –---- condition true అయితేనే పని
+
+Loop అంటే –--------- ఒకే పని చాలా సార్లు చేయడం
+
+
+
+
+
+
+core modules
+============
+
+Playbook tasks can be implemented through core modules.
+
+custom modules
+==============
+
+we can implement our own modules using the python, But thousands of predefined modules are available.
+
+
+
+
+===============================================================================================================================================
+
+
+Ansible installation
+====================
+
+IQ] what are the prerequsites required to install ansible?
+
+OS: linux
+lang: python
+
+NOTE: Using ansible we can configure the windows m/c, But ansible is not installed on windows.
+
+
+step 1: create 3 redhat systems
+-------
+
+[1- Ansible system, 2- Host systems for demo] in AWS
+
+ansible server: 172.31.6.49
+Host machine 1: 172.31.3.215
+Host machine 2: 172.31.6.156
+
+
+step 2: waste of india this step 2
+----------------------------------
+
+ Login As a root user and create ansible user and provide sudo access in all Servers.
+
+    2.1) Create the user ansible and set the password on all hosts:
+           sudo useradd ansible
+           sudo passwd ansible
+     
+    2.2) Make the necessary entry in sudoers file /etc/sudoers for ansible        
+           user for password-less sudo access:
+          
+           visudo
+
+           ansible ALL=(ALL) NOPASSWD: ALL
+
+       
+
+    2.3) Make the necessary changes  in sshd_config file /etc/ssh/sshd_config    
+           to enable password based authentication.
+
+         Un comment PasswordAuthentication yes
+         and comment  PasswordAuthentication no.
+         And save the file .
+
+           sudo vi /etc/ssh/sshd_config
+
+     2.4)    Then restart sshd service.
+                sudo service sshd restart
+
+==========
+
+
+
+Run in the ansible server
+-------------------------
+
+sudo yum install ansible-core -y
+
+
+sudo su - ansible
+
+sudo vi /etc/ansible/hosts
+
+[my_hosts]
+172.31.3.215 ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+
+172.31.6.156 ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+
+
+NOTE: pls copy the pem file into linux server
+
+ansible all -m ping
+
+🔸 ansible ------- Ansible command-line tool
+
+🔸 all ----------- Inventory లో ఉన్న అన్ని servers 
+
+🔸 -m ping --------ping module ఉపయోగించు
+
+ఇది network ping కాదు
+
+ఇది Ansible ping (SSH + Python check)
+
+🧠 ఇది ఏమి చేస్తుంది?
+
+1. Ansible server నుంచి
+
+2. target servers కి SSH connect అవుతుందా?
+
+3. Python available ఉందా?
+
+4. Credentials సరైందా?
+
+5. syntax crrt ga unda leda ani check cheysthundi
+
+👉 ఇవన్నీ OK అయితే response ఇస్తుంది.
+
+output
+------
+
+server1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+👉 pong అంటే:
+✔️ Server reachable
+✔️ SSH working
+✔️ Ansible ready
+
+❌ Failure Example
+------------------
+
+server1 | UNREACHABLE!
+
+👉 Meaning:
+• SSH issue
+• Wrong user / password
+• SSH key problem
+• Firewall blocked
+- SSH service not running
+- Wrong inventory IP
+- Port 22 blocked
+- Permission denied
+
+
+
+ansible all -m ping -o --> It will display in single line
+
+Example:
+--------
+server1 | SUCCESS => ping=pong
+server2 | SUCCESS => ping=pong
+
+===============================================================================
+
+
+
+
+
+
+How to list the ansible modules
+---------------------------------
+
+1. ansible-doc copy    👉 copy module documentation చూపిస్తుంది
+                       👉 files ని local → remote servers కి copy చేయడానికి ఉపయోగిస్తారు
+
+
+2. ansible-doc yum     👉 yum module documentation చూపిస్తుంది
+                       👉 RHEL / CentOS servers లో packages install చేయడానికి ఉపయోగిస్తారు
+
+
+3.ansible-doc shell    👉 shell module documentation చూపిస్తుంది
+                       👉 remote servers లో shell commands run చేయడానికి ఉపయోగిస్తారు
+
+
+4. ansible-doc -l | grep "copy"     👉 modules list లో "copy" word ఉన్న modules మాత్రమే filter చేసి చూపిస్తుంది
+
+
+
+
+some sample commands
+====================
+
+shell module
+------------
+
+ansible all -m shell -a "df -kh"       [ a means arguments]
+
+ansible all -m shell -a "git --version"
+
+NOTE: in ansible default module is "shell"
+
+ansible all -m shell -a "uptime" or ansible all -a "uptime"
+
+
+IQ] instead of checking all the servers how to check for specific servers like DB or app
+
+
+ansible app -a "free -h"
+ansible db -a "date"
+
+
+yum module
+----------
+
+ansible all -b -m yum -a "name=git"  ----> install git
+
+ansible all -b -m yum -a "name=java" ----> install java
+
+ansible all -a "java --version"  --------> Java version check command
+
+
+
+ansible all -b -m yum -a "name=httpd state=present" --> Install httpd package in all node.
+
+ansible all -b -m yum -a "name=httpd state=latest" ---> to update the httpd packages
+
+ansible all -b -m yum -a "name=httpd state=absent" ---> to remove/uninstall httpd package
+
+
+
+
+service module
+--------------
+
+ansible 172.31.43.147 -b -m service -a "name=httpd state=started"
+
+ansible all -b -m command -a "systemctl status httpd"
+
+
+ansible all -b -m service -a "name=httpd state=restarted"
+
+ansible all -b -m service -a "name=httpd state=stopped"
