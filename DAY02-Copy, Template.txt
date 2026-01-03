@@ -581,29 +581,15 @@ step 3: create a playbook name.yaml
           location: "adoni"
 
 
+===================================================================================================================================
 
 
-
-
-
-
-
-
-
-
-
-
-  
-
- 
-
-
-=====================================
 
 debug module in ansible
 ========================
 
-The debug module in Ansible is a useful tool for outputting information during playbook execution. It helps you inspect variables, confirm task execution, and troubleshoot issues in your Ansible scripts.
+The debug module in Ansible is a useful tool for outputting information during playbook execution. It helps you inspect variables, 
+confirm task execution, and troubleshoot issues in your Ansible scripts.
 
 
 Example -1 for debug module
@@ -689,10 +675,8 @@ vars:
     automation_tool: "Ansible Automation"
 
 
-
-
-
 ====================================================================================================================================================
+
 
 Handlers in ansible
 ====================
