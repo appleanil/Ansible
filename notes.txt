@@ -92,7 +92,7 @@ ansible-playbook ping.yaml
 example 2 playbook filename httpd.yaml
 --------------------------------------
 
-before writing a playbook plz create a filename httpd.html in that ask chtgpt html, css code
+before writing a playbook plz create a filename httpd.html plz refer example 3 playbook filename demo.yaml at line number 137
 
 ---
 - hosts: all
@@ -130,16 +130,43 @@ ansible all -m shell -a ls -lrth /var/www/html ----------> another way to check 
 
 IQ] what is the difference between copy module and template module?
 
-copy: copy will copy the file from local (ansible server) to remote machines.
-template: template will copy file from local(ansible server) to remote(host) machines,It      replace the content using variables, while copying.
+plz check difference where we are using copy at line number 188
+** copy: copy will copy the file from local (ansible server) to remote machines.
+** template: template will copy file from local(ansible server) to remote(host) machines, It replace the content using variables, while copying.
 
 
-example 3 playbook filename demo.yaml
---------------------------------------
 
+we are using in this file static mode
 before writing a playbook plz create a filename index.html in that file insert some data like privacy 
-<h1> hii im Anil Kumar, phnnumber: 6303717004 and i learning Devops course from Adoni, Kurnool (dist), Andhra Pradesh.
+save index.html ekkada nenu data antha hardcore cheysanu
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DevOps Practice Page</title>
+</head>
+<body>
+
+  <h1>Hi, I'm Anil Kumar</h1>
+
+  <p>
+    Phone Number: <strong>6303717004</strong>
+  </p>
+
+  <p>
+    I am learning <strong>DevOps course</strong> from
+    <strong>Location: Adoni, Kurnool (Dist), Andhra Pradesh</strong>.
+  </p>
+
+  <p>
+    <strong>Privacy:</strong> Hardcore Dynamic
+  </p>
+
+</body>
+</html>
+
+example 3 playbook filename demo1.yaml
+--------------------------------------
 ---
 - name: Install and configure Apache HTTP server
   hosts: all  
@@ -162,6 +189,7 @@ before writing a playbook plz create a filename index.html in that file insert s
         src: index.html     # Path to your local index.html file
         dest: /var/www/html/index.html  # Destination on the target server
 
+
 ansible-playbook demo.yaml --syntax-check
 
 ansible-playbook demo.yaml
@@ -171,6 +199,66 @@ ansible all -m shell -a "systemctl status httpd" ---------> to check all server 
 
 ansible all -m shell -a ls -lrth /var/www/html  ----------> another way to check install or not
 
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ page_title }}</title>
+</head>
+<body>
+
+  <h1>Hi, I'm {{ name }}</h1>
+
+  <p>
+    Phone Number:
+    <strong>{{ phone }}</strong>
+  </p>
+
+  <p>
+    I am learning <strong>{{ course }}</strong> from
+    <strong>Location: {{ location }}</strong>.
+  </p>
+
+</body>
+</html>
+
+
+
+example 3 playbook filename demo2.yaml
+--------------------------------------
+---
+- name: Install and configure Apache HTTP server
+  hosts: all
+  become: true
+
+  vars:
+    page_title: "DevOps Practice Page"
+    name: "Lina Kumar"
+    phone: "9347888769"
+    course: "DevOps course"
+    location: "Macharla, Guntur (Dist), Andhra Pradesh"
+
+  tasks:
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+
+    - name: Ensure httpd is started and enabled
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Copy dynamic index.html to web root
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+
+
+see the changes and write in notes
+
 
 
 
@@ -179,57 +267,35 @@ ansible all -m shell -a ls -lrth /var/www/html  ----------> another way to check
 Template module
 ----------------
 
-before writing a playbook plz create a filename index.html in that file insert some data like privacy to hardcore dyanmic name and location and some other
-<!DOCTYPE html>
-<html>
-<head>
-  <title>DevOps Practice Page</title>
-</head>
-<body>
-
-  <h1>Hi, I'm Anil Kumar</h1>
-
-  <p>
-    Phone Number: <strong>6303717004</strong>
-  </p>
-
-  <p>
-  <strong>Location:</strong>
-  I am learning <strong>DevOps course</strong> from
-  <strong>Adoni, Kurnool (Dist), Andhra Pradesh</strong>.
-  </p>
-
-  <p>
-    <strong>Privacy:</strong> Hardcore Dynamic
-  </p>
-
-</body>
-</html>
+before writing a playbook plz create a filename index.html in that file insert some data like privacy to hardcore dynamic name and location and some other
 
 
-
-
-
-example 4 Template template.yaml at line number 263 
+example 4 Template template.yaml at line number 350 its will changes lines
 ---------------------------------------------------
-create two yaml files for check difference between using normal and template vars
+create two yaml files for check difference between using template and template vars save index.html
+
 <!DOCTYPE html>
 <html>
 <head>
   <title>DevOps Automation Page</title>
 </head>
+
 <body>
 
   <h1>Hi, I'm Anil Kumar</h1>
 
   <p>
-    Phone Number:
-    <strong>6303717004</strong>
+    <strong>Phone Number:</strong>
+    {{ phone }}
   </p>
 
   <p>
-    I am learning <strong>DevOps course</strong> from
-    <strong>Adoni, Kurnool (Dist), Andhra Pradesh, India</strong>.
+    I am learning <strong>DevOps Course</strong>
+  </p>
+
+  <p>
+    <strong>Location:</strong>
+    {{ location }}
   </p>
 
   <p>
@@ -240,11 +306,6 @@ create two yaml files for check difference between using normal and template var
   <p>
     <strong>Time:</strong>
     {{ ansible_date_time.time }}
-  </p>
-
-  <p>
-    <strong>Privacy:</strong>
-    Hardcore Dynamic
   </p>
 
   <hr>
@@ -260,8 +321,9 @@ create two yaml files for check difference between using normal and template var
 </html>
 
 
-save template1.yaml
-------------------
+
+save this ansible playbook with template1.yaml
+-----------------------------------------------
 
 ---
 - name: Install and configure Apache HTTP server
@@ -272,6 +334,7 @@ save template1.yaml
     Phone: "6303717004"
     date: "enter today date"  # Change this to your desired document root
     time: "enter time" # date & time vars అవసరం లేదు ansible_date_time facts template లో directly use చేస్తాం
+
   tasks:
     - name: Install httpd
       yum:  # Use yum for Red Hat/CentOS or dnf for newer versions
@@ -289,9 +352,10 @@ save template1.yaml
         src: index.html  # Path to your local index.html file
         dest: /var/www/html/index.html  # Destination on the target server
 
-ansible-playbook name.yaml -e location="hyd"
-  or
-ansible-playbook name.yaml -e 'location=hyd phoneNo=99999999'
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -329,6 +393,11 @@ before writing a playbook plz create a filename index.html in that file insert s
     {{ ansible_date_time.time }}
   </p>
 
+  <p>
+    <strong>OS:</strong>
+    {{ ansible_distribution }} {{ ansible_distribution_version }}
+  </p>
+
   <hr>
 
   <p>
@@ -344,6 +413,9 @@ before writing a playbook plz create a filename index.html in that file insert s
 ============================================================================================================================================
                                                         chtgpt best practices
 ============================================================================================================================================
+
+save this ansible playbook with template2.yaml
+-----------------------------------------------
 ---
 - name: Install and configure Apache HTTP Server
   hosts: all      # Specify your target hosts group
@@ -355,6 +427,7 @@ before writing a playbook plz create a filename index.html in that file insert s
     phone: "6303717004"                                       # Change this to your desired document root
     course: "DevOps Course"
     location: "Adoni, Kurnool (Dist), Andhra Pradesh, India"  #
+    OS: "Amazon Linux 2023"
     automation_tool: "Ansible Automation"
 
   tasks:
@@ -374,9 +447,7 @@ before writing a playbook plz create a filename index.html in that file insert s
         src: index.html                   # Path to your local index.html file
         dest: /var/www/html/index.html    # Destination on the target server
 
-ansible-playbook name.yaml -e location="hyd"
-  or
-ansible-playbook name.yaml -e 'location=hyd phoneNo=99999999'
+
 
 
 ============================================================================================================================================
@@ -410,9 +481,51 @@ ansible-playbook name.yaml -e 'location=hyd phoneNo=99999999'
         dest: /var/www/html/index.html  # Destination on the target server
 
 
-ansible-playbook name.yaml -e location="hyd"
-  or
-ansible-playbook name.yaml -e 'location=hyd phoneNo=99999999'
+=============================================================================================================================================================
+
+
+Playbook run చేసే time లో
+variables కి values ఇవ్వడం లేదా
+playbook లో ఉన్న values ని override చేయడం
+
+location variable కి value = hyd
+playbook లో location ఉన్నా కూడా
+run time value use అవుతుంది
+
+Using -e option, we can pass variables at run time and override playbook variables.
+
+
+1. ansible-playbook template1.yaml -e location="hyd"
+ 
+2. ansible-playbook template1.yaml -e 'location=hyd phoneNo=99999999'
+
+3. ansible-playbook template1.yaml -e '{"location":"hyd","phoneNo":"99999999"}'
+
+
+example: 1 for all
+-------------------
+ansible-playbook template1.yaml -e page_title="DevOps Practice Page"
+ansible-playbook template1.yaml -e course="DevOps Course"
+ansible-playbook template1.yaml -e name="Anil Kumar"
+ansible-playbook template1.yaml -e phoneNo="6303717004"
+ansible-playbook template1.yaml -e location="Adoni"
+ansible-playbook template1.yaml -e automation_tool="Ansible Automation"
+
+this is high priority by runtime
+
+example 3 for all in json format
+-------------------------------
+• Variable names must exactly match template/playbook
+• JSON quotes correct గా ఉండాలి
+• Space ఉన్న values JSON లో safe
+
+
+ansible-playbook template1.yaml -e '{"location":"hyd","phoneNo":"6303717004","name":"Anil Kumar","course":"DevOps Course",
+"page_title":"DevOps Practice Page","automation_tool":"Ansible Automation"}'
+
+
+
+
 
 variables in ansible
 =====================
