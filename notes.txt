@@ -44,11 +44,10 @@ Example
 
 ---
 - hosts: all
-  gather_facts: no 
+  gather_facts: no   # in output it will shows more same lines so disable it (no) by default it is true 
   tasks:
   - name: pinging the host machines
     ping:
-...
 
 
 
@@ -58,52 +57,76 @@ How to run a playbook?
 
 ansible-playbook ping.yaml
 
-ansible-playbook ping.yaml --> syntax-check
+ansible-playbook ping.yaml --syntax-check   ----------> to check the syntax error had a crrt ansible playbook 
 
 
 IQ] can you write a ansible play-book to create file to all host machines.
 
+while practise plz check these commands difference then write what i understand
 
 ansible all -b -m copy -a "src=security.py dest=/tmp/security.py" 
 
 ansible all -b -m command -a "touch security.py"
 
+example 1 playbook filename ping.yaml
+-------------------------------------
+
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Create a file in all host machines
+      file:
+        path: /tmp/security.py
+        owner: ec2-user
+        group: ec2-user
+        mode: '0777'
+        state: touch
+
+
+ansible-playbook ping.yaml --syntax-check
+
+ansible-playbook ping.yaml
+
+
+example 2 playbook filename httpd.yaml
+--------------------------------------
+
+before writing a playbook plz create a filename httpd.html in that ask chtgpt html, css code
 
 ---
 - hosts: all
   become: true
+
   tasks:
-  - name : creating a file in all host machines
-    file:
-      path: /tmp/security.py
-      owner: ec2-user
-      group: ec2-user
-      mode: 0777
-      state: touch  
-...
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+
+    - name: Copy abc.html file
+      copy:
+        src: abc.html
+        dest: /var/www/html/abc.html
+
+    - name: Start httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+
+ansible-playbook httpd.yaml --syntax-check
+
+ansible-playbook httpd.yaml
+
+ansible all -m shell -a "systemctl status httpd" ---------> to check all server IP address machines whether it is install or not
+
+ansible all -m shell -a ls -lrth /var/www/html ----------> another way to check install or not
 
 
 
----
-- hosts: all
-  become: true
-  tasks:
-  - name: installing httpd
-    yum:
-      name: httpd
-      state: present
-  - name: copying abc.html
-    copy:
-      src: abc.html
-      dest: /var/www/html/abc.html
-  - name: stating the httpd service
-    service:
-      name: httpd
-      state: started 
-...
-
-
-==================================================
+================================================================================================================================================
 
 IQ] what is the difference between copy module and template module?
 
@@ -111,8 +134,12 @@ copy: copy will copy the file from local (ansible server) to remote machines.
 template: template will copy file from local(ansible server) to remote(host) machines,It      replace the content using variables, while copying.
 
 
-copy module
------------
+example 3 playbook filename demo.yaml
+--------------------------------------
+
+before writing a playbook plz create a filename index.html in that file insert some data like privacy 
+<h1> hii im Anil Kumar, phnnumber: 6303717004 and i learning Devops course from Adoni, Kurnool (dist), Andhra Pradesh.
+
 ---
 - name: Install and configure Apache HTTP server
   hosts: all  
@@ -132,21 +159,239 @@ copy module
 
     - name: Copy custom index.html to the web root
       copy:
-        src: index.html  # Path to your local index.html file
+        src: index.html     # Path to your local index.html file
         dest: /var/www/html/index.html  # Destination on the target server
 
+ansible-playbook demo.yaml --syntax-check
+
+ansible-playbook demo.yaml
 
 
-template module
+ansible all -m shell -a "systemctl status httpd" ---------> to check all server IP address machines whether it is install or not
+
+ansible all -m shell -a ls -lrth /var/www/html  ----------> another way to check install or not
+
+
+
+
+
+
+Template module
 ----------------
+
+before writing a playbook plz create a filename index.html in that file insert some data like privacy to hardcore dyanmic name and location and some other
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DevOps Practice Page</title>
+</head>
+<body>
+
+  <h1>Hi, I'm Anil Kumar</h1>
+
+  <p>
+    Phone Number: <strong>6303717004</strong>
+  </p>
+
+  <p>
+  <strong>Location:</strong>
+  I am learning <strong>DevOps course</strong> from
+  <strong>Adoni, Kurnool (Dist), Andhra Pradesh</strong>.
+  </p>
+
+  <p>
+    <strong>Privacy:</strong> Hardcore Dynamic
+  </p>
+
+</body>
+</html>
+
+
+
+
+
+example 4 Template template.yaml at line number 263 
+---------------------------------------------------
+create two yaml files for check difference between using normal and template vars
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DevOps Automation Page</title>
+</head>
+<body>
+
+  <h1>Hi, I'm Anil Kumar</h1>
+
+  <p>
+    Phone Number:
+    <strong>6303717004</strong>
+  </p>
+
+  <p>
+    I am learning <strong>DevOps course</strong> from
+    <strong>Adoni, Kurnool (Dist), Andhra Pradesh, India</strong>.
+  </p>
+
+  <p>
+    <strong>Date:</strong>
+    {{ ansible_date_time.date }}
+  </p>
+
+  <p>
+    <strong>Time:</strong>
+    {{ ansible_date_time.time }}
+  </p>
+
+  <p>
+    <strong>Privacy:</strong>
+    Hardcore Dynamic
+  </p>
+
+  <hr>
+
+  <p>
+    <em>
+      This page is automatically deployed using
+      <strong>Ansible Automation</strong>.
+    </em>
+  </p>
+
+</body>
+</html>
+
+
+save template1.yaml
+------------------
 
 ---
 - name: Install and configure Apache HTTP server
   hosts: all  # Specify your target hosts group
   become: true  # Use sudo to install packages
   vars:
-    location: "nellore"       # Change this to your server name
-    date: "21-10-2024"  # Change this to your desired document root
+    location: "Adoni, kurnool (dist), Andhra Pradesh"       # Change this to your server name
+    Phone: "6303717004"
+    date: "enter today date"  # Change this to your desired document root
+    time: "enter time" # date & time vars అవసరం లేదు ansible_date_time facts template లో directly use చేస్తాం
+  tasks:
+    - name: Install httpd
+      yum:  # Use yum for Red Hat/CentOS or dnf for newer versions
+        name: httpd
+        state: present
+
+    - name: Ensure httpd is started and enabled
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Copy custom index.html to the web root
+      template:
+        src: index.html  # Path to your local index.html file
+        dest: /var/www/html/index.html  # Destination on the target server
+
+ansible-playbook name.yaml -e location="hyd"
+  or
+ansible-playbook name.yaml -e 'location=hyd phoneNo=99999999'
+
+
+
+before writing a playbook plz create a filename index.html in that file insert some data like privacy to hardcore dyanmic name and location and some other
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ page_title }}</title>
+</head>
+<body>
+
+  <h1>Hi, I'm {{ name }}</h1>
+
+  <p>
+    <strong>Phone Number:</strong>
+    {{ phone }}
+  </p>
+
+  <p>
+    I am learning <strong>{{ course }}</strong>
+  </p>
+
+  <p>
+    <strong>Location:</strong>
+    {{ location }}
+  </p>
+
+  <p>
+    <strong>Date:</strong>
+    {{ ansible_date_time.date }}
+  </p>
+
+  <p>
+    <strong>Time:</strong>
+    {{ ansible_date_time.time }}
+  </p>
+
+  <hr>
+
+  <p>
+    <em>
+      This page is automatically deployed using
+      <strong>{{ automation_tool }}</strong>.
+    </em>
+  </p>
+
+</body>
+</html>
+
+============================================================================================================================================
+                                                        chtgpt best practices
+============================================================================================================================================
+---
+- name: Install and configure Apache HTTP Server
+  hosts: all      # Specify your target hosts group
+  become: true    # Use sudo to install packages
+
+  vars:
+    page_title: "DevOps Automation Page"
+    name: "Anil Kumar"                                        # Change this to your server name
+    phone: "6303717004"                                       # Change this to your desired document root
+    course: "DevOps Course"
+    location: "Adoni, Kurnool (Dist), Andhra Pradesh, India"  #
+    automation_tool: "Ansible Automation"
+
+  tasks:
+    - name: Install Apache (httpd)
+      yum:                               # Use yum for Red Hat/CentOS or dnf for newer versions
+        name: httpd
+        state: present
+
+    - name: Start and enable Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Copy dynamic index.html to web root
+      template:
+        src: index.html                   # Path to your local index.html file
+        dest: /var/www/html/index.html    # Destination on the target server
+
+ansible-playbook name.yaml -e location="hyd"
+  or
+ansible-playbook name.yaml -e 'location=hyd phoneNo=99999999'
+
+
+============================================================================================================================================
+                                                        KKfunda
+============================================================================================================================================
+
+---
+- name: Install and configure Apache HTTP server
+  hosts: all  # Specify your target hosts group
+  become: true  # Use sudo to install packages
+  vars:
+    location: "Adoni, kurnool (dist), Andhra Pradesh"       # Change this to your server name
+    date: "enter today date"  # Change this to your desired document root
+    time: "enter time" # date & time vars అవసరం లేదు ansible_date_time facts template లో directly use చేస్తాం
+     # next yaml file plz add Phone: "6303717004"
   tasks:
     - name: Install httpd
       yum:  # Use yum for Red Hat/CentOS or dnf for newer versions
