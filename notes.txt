@@ -33,6 +33,80 @@ without lopps
         state: present
 
 
+            ------------------------------------------------------------------------------------------------
+                    AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+            ------------------------------------------------------------------------------------------------
+
+
+
+without-loops & debug yaml file
+-------------------------------
+
+---
+- name: Install packages without loops
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Debug - Installing Git
+      debug:
+        msg: "Starting installation of Git"
+
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+
+    - name: Debug - Git installed
+      debug:
+        msg: "Git installation completed"
+
+    - name: Debug - Installing Zip
+      debug:
+        msg: "Starting installation of Zip"
+
+    - name: Install Zip
+      yum:
+        name: zip
+        state: present
+
+    - name: Debug - Zip installed
+      debug:
+        msg: "Zip installation completed"
+
+    - name: Debug - Installing Vim
+      debug:
+        msg: "Starting installation of Vim"
+
+    - name: Install Vim
+      yum:
+        name: vim
+        state: present
+
+    - name: Debug - Vim installed
+      debug:
+        msg: "Vim installation completed"
+
+    - name: Debug - Installing Unzip
+      debug:
+        msg: "Starting installation of Unzip"
+
+    - name: Install Unzip
+      yum:
+        name: unzip
+        state: present
+
+    - name: Debug - Unzip installed
+      debug:
+        msg: "Unzip installation completed"
+
+                 ------------------------------------------------------------------------------------------------
+                           AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                 ------------------------------------------------------------------------------------------------
+
+
+
+
 with-loops
 ----------
 approach 1:
@@ -52,22 +126,67 @@ approach 1:
         - unzip
         - tree
 
+                             ------------------------------------------------------------------------------------------------
+                                     AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                             ------------------------------------------------------------------------------------------------
 
 
+with-loops & debug yaml file
+----------------------------
 
+i want install in redhat only then ask chtght and ask when condition statements also so that we can do more practises
 
+---
+- name: Install packages with loops
+  hosts: all
+  become: yes
 
+  tasks:
+    - name: Debug - Starting installation of packages
+      debug:
+        msg: "Installing package: {{ item }}"
+      loop:
+        - git
+        - zip
+        - vim
+        - unzip
+        - tree
 
+    - name: Install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - zip
+        - vim
+        - unzip
+        - tree
 
+    - name: Debug - Package installation completed
+      debug:
+        msg: "Installation completed for package: {{ item }}"
+      loop:
+        - git
+        - zip
+        - vim
+        - unzip
+        - tree
 
+                 ------------------------------------------------------------------------------------------------
+                           AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                 ------------------------------------------------------------------------------------------------
 
 
 
  approach 2:
+ -----------
 
- - name: Install packages with with_items
+---
+- name: Install packages with with_items
   hosts: all
   become: yes
+
   tasks:
     - name: Install packages
       yum:
@@ -78,6 +197,11 @@ approach 1:
         - zip
         - vim
         - unzip
+
+
+                       ------------------------------------------------------------------------------------------------
+                               AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                       ------------------------------------------------------------------------------------------------
 
 
 How to uninstall?
@@ -127,25 +251,46 @@ Assignment
 
 
 
-
-
-
-
 when condition in ansible
-==========================
+=========================
+
+for practise create three instances like 1. Amazon linux 2. Ubuntu 3. Redhat
+
+ansible all -m ping
+
+paste the IP address in sudo vi /etc/ansible/hosts
+
+we can define like also [webserver] have 2 instances, [db] 3 instances, [frontend] 4 instances
+
+[webservers]
+172.31.3.184 ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+172.31.0.49  ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+172.31.5.94  ansible_ssh_user=ubuntu   ansible_ssh_private_key_file=~/kkdevopsb7.pem
 
 
+ansible all -m setup
+
+ansible all -m setup | grep "redhat" "ubuntu" "amazon"
+
+ansible all -m setup | grep "ansible_distribution"
+
+not only we are filtering ansible_distribution there no:of 
+1. ansible_distribution
+2. ansible_distribution_version
+3. ansible_default_ipv4.address
+4. ansible_hostname
+5. ansible_memtotal_mb
+6. ansible_processor_vcpus
+
+plz ask no:of playbooks to do best practises when condition multiple use cases in real time devops engineers
 
 In Ansible, you can use the when condition to control whether a task should be executed based on a specific condition.
 
 NOTE: take one ubuntu machine
 
-
-ansible all -m setup
-
 ---
 - name: Install HTTP server conditionally for Ubuntu and Red Hat
-  hosts: all
+  hosts: all #[ubuntu] [amazon] [redhat] [webservers] [db] [frontend] we can mention here
   become: yes
   tasks:
     - name: Install Apache on Ubuntu
@@ -177,9 +322,6 @@ ansible all -m setup
 
 
 
-
-
-
 ---
 - name: Install HTTP server conditionally for Ubuntu and Red Hat
   hosts: all
@@ -202,12 +344,24 @@ ansible all -m setup
 
 
 
-tags in anisble
+tags in ansible
 ===============
 
-In Ansible, a tag is a label that you can assign to tasks, plays, or roles in your playbook. Tags allow you to selectively run specific parts of your playbook without executing the entire playbook. This can be especially useful for larger playbooks where you may want to test or apply only certain tasks.
+In Ansible, a tag is a label that you can assign to tasks, plays, or roles in your playbook. 
+Tags allow you to selectively run specific parts of your playbook without executing the entire playbook. 
+This can be especially useful for larger playbooks where you may want to test or apply only certain tasks.
 
+before write ansible playbook must and should create index.html insert some data <h1> hi im leaning Devops </h1>
+later some changes are happens in index.html <h1> hi im learning Devops,AWS,SRE,Decsecops </h2>
+then run this commands 
 
+1. ansible-playbook name.yaml --syntax-check
+
+2. ansible-playbook name.yaml --list-tags
+
+3. ansible-playbook your_playbook.yml --tags "deploy" #install configure start --> to run the playbook
+
+4. ansible-playbook manage_web_server.yml --skip-tags install #start #deploy configure  --> to skip the particular task.
 
 
 ---
@@ -220,7 +374,7 @@ In Ansible, a tag is a label that you can assign to tasks, plays, or roles in yo
       yum:  # Use yum for Red Hat/CentOS or dnf for newer versions
         name: httpd
         state: present
-      tags: install
+      tags: install #start
 
     - name: Ensure httpd is started and enabled
       service:
@@ -234,17 +388,6 @@ In Ansible, a tag is a label that you can assign to tasks, plays, or roles in yo
         src: index.html  # Path to your local index.html file
         dest: /var/www/html/index.html  # Destination on the target server
       tags: deploy
-
-
-
-ansible-playbook name.yaml --syntax-check
-
-ansible-playbook name.yaml --list-tags
-
-ansible-playbook your_playbook.yml --tags "deploy"  --> to run the playbook
-
-
-ansible-playbook manage_web_server.yml --skip-tags start  --> to skip the particular task.
 
 
 
@@ -268,7 +411,8 @@ ansible-galaxy init httpd
 
  Directory Structure for the Role
 
-The role will have a similar structure to before but will include a `templates` directory for the `index.html` template file, and a `vars` directory for the `vars.yaml` file.
+The role will have a similar structure to before but will include a `templates` directory for the `index.html` template file, 
+and a `vars` directory for the `vars.yaml` file.
 
 
 roles/
@@ -329,7 +473,8 @@ yaml
 
 # 2. `roles/apache/templates/index.html`
 
-Place your `index.html` file in this directory. This will be a template that Ansible can process, and if necessary, you can include variables in this file (e.g., `{{ some_variable }}`) to make it dynamic.
+Place your `index.html` file in this directory. This will be a template that Ansible can process, and if necessary,
+you can include variables in this file (e.g., `{{ some_variable }}`) to make it dynamic.
 
 Example `index.html` (with a simple template):
 
@@ -351,10 +496,11 @@ Example `index.html` (with a simple template):
 
 # 3. `roles/apache/vars/main.yml`
 
-Here, you can define the variables used by the playbook. For example, you can define the `apache_package_name` or any other variables that make the role more configurable.
+Here, you can define the variables used by the playbook. For example, you can define the `apache_package_name` or 
+any other variables that make the role more configurable.
 
 yaml
----
+----
 # vars/main.yml
 
 apache_package_name: httpd
@@ -392,7 +538,7 @@ yaml
 This file is for role metadata, including dependencies. For now, you can leave it empty unless you have dependencies.
 
 yaml
----
+----
 # meta/main.yml
 
 dependencies: []
@@ -431,7 +577,8 @@ apache_server_name: "Custom Apache Server"
 
 - Modularity: The role is now modular and can be reused across multiple playbooks.
 - Customizability: You can customize the Apache server name, package name, and other variables by modifying `vars/main.yml` or the `vars.yaml` file.
-- Template: The `index.html` template allows for dynamic content generation based on Ansible facts or variables. For example, `{{ ansible_hostname }}` can be used to display the host’s name in the web page.
+- Template: The `index.html` template allows for dynamic content generation based on Ansible facts or variables. For example, `{{ ansible_hostname }}` 
+  can be used to display the host’s name in the web page.
 
 
 
@@ -445,7 +592,8 @@ apache_server_name: "Custom Apache Server"
 Ansible vault
 ==============
 
-Ansible Vault is a feature that allows you to encrypt sensitive data such as passwords, SSH keys, and API tokens inside Ansible playbooks or inventory files. This ensures that sensitive information is securely stored and only accessible with a password.
+Ansible Vault is a feature that allows you to encrypt sensitive data such as passwords, SSH keys, and API tokens inside Ansible playbooks or inventory files. 
+This ensures that sensitive information is securely stored and only accessible with a password.
 
 ---
 
@@ -633,14 +781,17 @@ ansible-vault rekey abc.yaml
 
 📝 Introduction to Ansible Dynamic Inventory
 ==============================================
-Ansible Inventory is the list of hosts (servers) that Ansible manages. By default, Ansible uses a static inventory file (e.g., inventory.ini), where hosts and groups are manually defined.
+Ansible Inventory is the list of hosts (servers) that Ansible manages. By default, Ansible uses a static inventory file (e.g., inventory.ini), 
+where hosts and groups are manually defined.
 
-However, in cloud environments like AWS, servers are dynamic—they are created and terminated frequently. Manually updating inventory files becomes inefficient and error-prone.
+However, in cloud environments like AWS, servers are dynamic—they are created and terminated frequently. Manually updating inventory files 
+becomes inefficient and error-prone.
 
 🔹 What is Ansible Dynamic Inventory?
 =====================================
 
-Ansible Dynamic Inventory automatically retrieves real-time information about cloud instances, virtual machines, or containers from external sources like AWS, Azure, GCP, or Kubernetes.
+Ansible Dynamic Inventory automatically retrieves real-time information about cloud instances, virtual machines, or containers from external sources 
+like AWS, Azure, GCP, or Kubernetes.
 
 Instead of maintaining a static hosts file, Ansible queries the cloud provider’s API and dynamically builds the inventory.
 
