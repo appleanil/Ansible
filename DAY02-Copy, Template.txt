@@ -201,7 +201,7 @@ ansible all -m shell -a ls -lrth /var/www/html  ----------> another way to check
 </head>
 <body>
 
-  <h1>Hi, I'm {{ name }}</h1>
+  <h1>Hi, I'm {{ name }} </h1>
 
   <p> Phone Number: <strong>{{ phone }}</strong> </p>
 
@@ -212,8 +212,8 @@ ansible all -m shell -a ls -lrth /var/www/html  ----------> another way to check
 
 
 
-example 3 playbook filename demo2.yaml
---------------------------------------
+example 3 playbook filename demo2.yaml here i hardcoded the data for copy
+-------------------------------------------------------------------------
 ---
 - name: Install and configure Apache HTTP server
   hosts: all
@@ -244,9 +244,6 @@ example 3 playbook filename demo2.yaml
         dest: /var/www/html/index.html
 
 
-see the changes and write in notes
-
-
 
 
 
@@ -254,10 +251,10 @@ see the changes and write in notes
 Template module
 ----------------
 
-before writing a playbook plz create a filename index.html in that file insert some data like privacy to hardcore dynamic name and location and some other
+before writing a playbook plz create a filename index.html in that file insert some data like privacy to hardcoded dynamic name and location and some other
 
 
-example 4 Template template.yaml at line number 350 its will changes lines
+example 4 Template template.yaml at line number 321 its will changes lines
 --------------------------------------------------------------------------
 create two yaml files for check difference between using template and template vars save index.html
 
@@ -374,7 +371,7 @@ save this ansible playbook with template2.yaml
     name: "Anil Kumar"                                        # Change this to your server name
     phone: "6303717004"                                       # Change this to your desired document root
     course: "DevOps Course"
-    location: "Adoni, Kurnool (Dist), Andhra Pradesh, India"  #
+    location: "Adoni, Kurnool (Dist), Andhra Pradesh, India"  
     OS: "Amazon Linux 2023"
     automation_tool: "Ansible Automation"
 
@@ -621,8 +618,8 @@ Example -1 for debug module
         msg: "CPU limit is {{ resource_limits.cpu }} and Memory limit is {{ resource_limits.memory }}"
 
 
-Example -2 for debug module & template module
----------------------------------------------
+Example - 2 for debug module & template module
+----------------------------------------------
 
 ---
 - name: Install and configure Apache HTTP server
