@@ -1,1 +1,390 @@
+Loops in ansible
+=================
 
+In Ansible, loops allow you to iterate over a list of items, making your playbooks more dynamic and reducing repetition.
+
+
+without lopps
+-------------
+
+---
+- name: Install packages without loops
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+
+    - name: Install Zip
+      yum:
+        name: zip
+        state: present
+
+    - name: Install Vim
+      yum:
+        name: vim
+        state: present
+
+    - name: install unzip
+      yum:
+        name: unzip
+        state: present
+
+
+            ------------------------------------------------------------------------------------------------
+                    AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+            ------------------------------------------------------------------------------------------------
+
+
+
+without-loops & debug yaml file
+-------------------------------
+
+---
+- name: Install packages without loops
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Debug - Installing Git
+      debug:
+        msg: "Starting installation of Git"
+
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+
+    - name: Debug - Git installed
+      debug:
+        msg: "Git installation completed"
+
+    - name: Debug - Installing Zip
+      debug:
+        msg: "Starting installation of Zip"
+
+    - name: Install Zip
+      yum:
+        name: zip
+        state: present
+
+    - name: Debug - Zip installed
+      debug:
+        msg: "Zip installation completed"
+
+    - name: Debug - Installing Vim
+      debug:
+        msg: "Starting installation of Vim"
+
+    - name: Install Vim
+      yum:
+        name: vim
+        state: present
+
+    - name: Debug - Vim installed
+      debug:
+        msg: "Vim installation completed"
+
+    - name: Debug - Installing Unzip
+      debug:
+        msg: "Starting installation of Unzip"
+
+    - name: Install Unzip
+      yum:
+        name: unzip
+        state: present
+
+    - name: Debug - Unzip installed
+      debug:
+        msg: "Unzip installation completed"
+
+                 ------------------------------------------------------------------------------------------------
+                           AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                 ------------------------------------------------------------------------------------------------
+
+
+
+
+with-loops
+----------
+approach 1:
+
+- name: Install packages with loops
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - zip
+        - vim
+        - unzip
+        - tree
+
+                             ------------------------------------------------------------------------------------------------
+                                     AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                             ------------------------------------------------------------------------------------------------
+
+
+with-loops & debug yaml file
+----------------------------
+
+i want install in redhat only then ask chtght and ask when condition statements also so that we can do more practises
+
+---
+- name: Install packages with loops
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Debug - Starting installation of packages
+      debug:
+        msg: "Installing package: {{ item }}"
+      loop:
+        - git
+        - zip
+        - vim
+        - unzip
+        - tree
+
+    - name: Install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - zip
+        - vim
+        - unzip
+        - tree
+
+    - name: Debug - Package installation completed
+      debug:
+        msg: "Installation completed for package: {{ item }}"
+      loop:
+        - git
+        - zip
+        - vim
+        - unzip
+        - tree
+
+                 ------------------------------------------------------------------------------------------------
+                           AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                 ------------------------------------------------------------------------------------------------
+
+
+
+ approach 2:
+ -----------
+
+---
+- name: Install packages with with_items
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - git
+        - zip
+        - vim
+        - unzip
+
+
+                       ------------------------------------------------------------------------------------------------
+                               AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
+                       ------------------------------------------------------------------------------------------------
+
+
+How to uninstall?
+-----------------
+
+- name: Uninstall packages with with_items
+  hosts: all
+  become: yes
+  tasks:
+    - name: Uninstall packages
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - git
+        - zip
+        - vim
+        - unzip
+
+
+
+Assignment 
+----------
+
+--> create 5 users in all the machines using loops.
+
+---
+- name: Create users on all machines
+  hosts: all
+  become: yes  # Use 'become' to run commands as a superuser
+  vars:
+    users:
+      - nagaraj
+      - santhi
+      - usha
+      - niranjan
+      - sathya
+
+  tasks:
+    - name: Ensure users are present
+      user:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ users }}"
+
+
+
+
+
+when condition in ansible
+=========================
+
+for practise create three instances like 1. Amazon linux 2. Ubuntu 3. Redhat
+
+ansible all -m ping
+
+paste the IP address in sudo vi /etc/ansible/hosts
+
+we can define like also [webserver] have 2 instances, [db] 3 instances, [frontend] 4 instances
+
+[webservers]
+172.31.3.184 ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+172.31.0.49  ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+172.31.5.94  ansible_ssh_user=ubuntu   ansible_ssh_private_key_file=~/kkdevopsb7.pem
+
+
+ansible all -m setup
+
+ansible all -m setup | grep "redhat" "ubuntu" "amazon"
+
+ansible all -m setup | grep "ansible_distribution"
+
+not only we are filtering ansible_distribution there no:of 
+1. ansible_distribution
+2. ansible_distribution_version
+3. ansible_default_ipv4.address
+4. ansible_hostname
+5. ansible_memtotal_mb
+6. ansible_processor_vcpus
+
+plz ask no:of playbooks to do best practises when condition multiple use cases in real time devops engineers
+
+In Ansible, you can use the when condition to control whether a task should be executed based on a specific condition.
+
+NOTE: take one ubuntu machine
+
+---
+- name: Install HTTP server conditionally for Ubuntu and Red Hat
+  hosts: all #[ubuntu] [amazon] [redhat] [webservers] [db] [frontend] we can mention here
+  become: yes
+  tasks:
+    - name: Install Apache on Ubuntu
+      apt:
+        name: apache2
+        state: present
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Apache on Red Hat
+      yum:
+        name: httpd
+        state: present
+      when: ansible_distribution == "RedHat"
+
+    - name: Start Apache service on Ubuntu
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Start Apache service on Red Hat
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_distribution == "RedHat"
+
+
+
+
+---
+- name: Install HTTP server conditionally for Ubuntu and Red Hat
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Apache on Ubuntu
+      apt:
+        name: apache2
+        state: present
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Start Apache service on Ubuntu
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: ansible_distribution == "Ubuntu"
+
+
+
+
+
+tags in ansible
+===============
+
+In Ansible, a tag is a label that you can assign to tasks, plays, or roles in your playbook. 
+Tags allow you to selectively run specific parts of your playbook without executing the entire playbook. 
+This can be especially useful for larger playbooks where you may want to test or apply only certain tasks.
+
+before write ansible playbook must and should create index.html insert some data <h1> hi im leaning Devops </h1>
+later some changes are happens in index.html <h1> hi im learning Devops,AWS,SRE,Decsecops </h2>
+then run this commands 
+
+1. ansible-playbook name.yaml --syntax-check
+
+2. ansible-playbook name.yaml --list-tags
+
+3. ansible-playbook your_playbook.yml --tags "deploy" #install configure start --> to run the playbook
+
+4. ansible-playbook manage_web_server.yml --skip-tags install #start #deploy configure  --> to skip the particular task.
+
+
+---
+- name: Install and configure Apache HTTP server
+  hosts: all  
+  become: true 
+
+  tasks:
+    - name: Install httpd
+      yum:  # Use yum for Red Hat/CentOS or dnf for newer versions
+        name: httpd
+        state: present
+      tags: install #start
+
+    - name: Ensure httpd is started and enabled
+      service:
+        name: httpd
+        state: started
+        enabled: true
+      tags: configure
+
+    - name: Copy custom index.html to the web root
+      copy:
+        src: index.html  # Path to your local index.html file
+        dest: /var/www/html/index.html  # Destination on the target server
+      tags: deploy
