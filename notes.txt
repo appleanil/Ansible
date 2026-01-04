@@ -11,8 +11,7 @@ Creating a Role
 ansible-galaxy init httpd
 
 
-
- Directory Structure for the Role
+Directory Structure for the Role
 
 The role will have a similar structure to before but will include a `templates` directory for the `index.html` template file, 
 and a `vars` directory for the `vars.yaml` file.
@@ -34,7 +33,8 @@ roles/
 │       └── main.yml
 
 
- Step-by-Step Conversion
+Step-by-Step Conversion
+------------------------
 
 1. Create the role directory structure.
 2. Move the tasks to the `tasks/main.yml` file.
@@ -42,17 +42,17 @@ roles/
 4. Move the `vars.yaml` to the `vars/main.yml` file (if necessary).
 5. Define the handler to restart the HTTP service in `handlers/main.yml`.
 
----
 
- Role Files
+Role Files
+-----------
 
-# 1. `roles/apache/tasks/main.yml`
+# 1. sudo vi roles/httpd/tasks/main.yml
 
 yaml
 ---
 # tasks/main.yml
 
-- name: Install Apache HTTP Server
+- name: Install httpd HTTP Server
   yum:
     name: "{{ apache_package_name }}"
     state: present
@@ -74,7 +74,7 @@ yaml
   tags: deploy
 
 
-# 2. `roles/apache/templates/index.html`
+# 2. sudo vi roles/httpd/templates/index.html
 
 Place your `index.html` file in this directory. This will be a template that Ansible can process, and if necessary,
 you can include variables in this file (e.g., `{{ some_variable }}`) to make it dynamic.
@@ -97,20 +97,20 @@ Example `index.html` (with a simple template):
 </html>
 
 
-# 3. `roles/apache/vars/main.yml`
+# 3. sudo vi roles/httpd/vars/main.yml
 
 Here, you can define the variables used by the playbook. For example, you can define the `apache_package_name` or 
 any other variables that make the role more configurable.
 
 yaml
-----
+---
 # vars/main.yml
 
 apache_package_name: httpd
 apache_server_name: "My Apache Server"
 
 
-# 4. `roles/apache/defaults/main.yml`
+# 4. sudo vi roles/httpd/defaults/main.yml
 
 You can specify default values for variables here. These defaults can be overridden by the `vars/main.yml` or playbook.
 
@@ -122,7 +122,7 @@ apache_package_name: httpd
 apache_server_name: "Default Apache Server"
 
 
-# 5. `roles/apache/handlers/main.yml`
+# 5. sudo vi roles/httpd/handlers/main.yml
 
 This file will contain the handler to restart the `httpd` service.
 
@@ -136,18 +136,20 @@ yaml
     state: restarted
 
 
-# 6. `roles/apache/meta/main.yml`
+# 6. sudo vi roles/httpd/meta/main.yml
 
 This file is for role metadata, including dependencies. For now, you can leave it empty unless you have dependencies.
 
 yaml
-----
+---
 # meta/main.yml
 
 dependencies: []
 
 
- Using the Role in a Playbook
+
+Using the Role in a Playbook
+-----------------------------
 
 Now that the role is created, you can use it in your playbook by specifying the `vars.yaml` file and referencing the role.
 
@@ -201,7 +203,7 @@ This ensures that sensitive information is securely stored and only accessible w
 ---
 
  Step 1: Create an Encrypted File
--------
+---------------------------------
 First, create a vault-encrypted file to store sensitive data.
 
 
@@ -217,16 +219,12 @@ api_key: "abcdef1234567890"
 
 
 
-
-
 Step 2: View the Encrypted File
--------
+-------------------------------
 
 Now, check how Ansible Vault has encrypted your file:
 
-
 cat secret.yml
-
 
 ✅ Expected Output:  
 The file should appear fully encrypted, something like this:
@@ -236,25 +234,19 @@ $ANSIBLE_VAULT;1.1;AES256
 6162636465663738393031323334353637383930...
 
 
----
 
 Step 3: Edit the Encrypted File
--------
+-------------------------------
 
-To modify the vault-encrypted file, use:
-
-
-ansible-vault edit secret.yml
-
+To modify the vault-encrypted file, use:  ansible-vault edit secret.yml
 
 🔹 Enter the vault password.  
 🔹 Make changes to the file (e.g., update the password).  
 🔹 Save and exit.
 
----
 
 Step 4: Decrypt the File (Optional)
---------
+-----------------------------------
 
 If you need to remove encryption and see plain text:
 
@@ -297,17 +289,15 @@ yaml
 - name: Test Ansible Vault
   hosts: all
   vars_files:
-    - secret.yaml
+    - secret.yml
   tasks:
     - name: Print sensitive variables
       debug:
         msg: "The database password is {{ db_password }}"
 
 
-Run the playbook with Vault:
 
-
-ansible-playbook vaulttest.yaml --ask-vault-pass
+Run the playbook with Vault --------------> ansible-playbook vaulttest.yaml --ask-vault-pass
 
 
 ✅ Expected Output:
@@ -318,15 +308,13 @@ ok: [localhost] => {
 }
 
 
----
 
 Step 7: Use Vault with a Password File
--------
+--------------------------------------
 
 Instead of manually entering the vault password, store it in a file:
 
 1️⃣ Create a password file:
-
 
 echo "kkdevops" > vault-password.txt
 chmod 600 vault-password.txt
@@ -334,44 +322,31 @@ chmod 600 vault-password.txt
 
 2️⃣ Run the playbook using the password file:
 
+ansible-playbook vaulttest.yaml --vault-password-file password.txt 
 
-ansible-playbook vaulttest.yaml --vault-password-file password.txt
+vaulttest.yaml encrypt lo untadi dani decript cheysi password.txt lo show cheysthundi
 
 
-✅ No need to type the password manually!
 
----
-
- 🎯 Summary
-- `ansible-vault create secret.yml` → Create encrypted file  
-- `ansible-vault view secret.yml` → View encrypted content  
-- `ansible-vault edit secret.yml` → Modify encrypted content  
-- `ansible-vault decrypt secret.yml` → Remove encryption  
-- `ansible-vault encrypt secret.yml` → Re-encrypt file  
+1. ansible-vault create secret.yml             ----------> to create secret.yaml
+2. ansible-vault view secret.yml               ----------> to view encrypted file content
+3. ansible-vault edit secret.yml               ----------> to edit encrypted file
+4. ansible-vault decrypt secret.yml            ----------> to decrypt (remove encryption)
+5. ansible-vault encrypt secret.yml            ----------> to encrypt the file again
+6. ansible-playbook site.yml --ask-vault-pass  ----------> to run playbook by asking decrypt/vault password
+7. ansible-playbook site.yml --vault-password-file password.txt ----------> to run playbook using password file
 - Use `--ask-vault-pass` or `--vault-password-file` for automation  
 
----
 
-# 🔥 Bonus: Encrypt an Entire Playbook
-Instead of encrypting just variables, encrypt an entire playbook:
-
-bash
-ansible-vault encrypt playbook.yml
+Bonus: Encrypt an Entire Playbook
+---------------------------------
+Instead of encrypting just variables, encrypt an entire playbook --------> ansible-vault encrypt playbook.yml
 
 
-Run it:
-
-bash
-ansible-playbook playbook.yml --ask-vault-pass
+To run playbook by asking decrypt/vault password                --------> ansible-playbook playbook.yml --ask-vault-pass
 
 
-
-
-
-NOTE : if you want to reset the password ,pls use below command
-
-ansible-vault rekey abc.yaml
-
+NOTE : if you want to reset the password ,pls use this command ---------> ansible-vault rekey abc.yaml
 
 
 ⚠️ Important
