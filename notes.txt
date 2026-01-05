@@ -79,7 +79,8 @@ yaml
 Place your `index.html` file in this directory. This will be a template that Ansible can process, and if necessary,
 you can include variables in this file (e.g., `{{ some_variable }}`) to make it dynamic.
 
-Example `index.html` (with a simple template):
+Example index.html (with a simple template):
+--------------------------------------------
 
 
 <!DOCTYPE html>
@@ -167,7 +168,7 @@ yaml
     - httpd
 
 
-# `vars.yaml` File (if it's separate from `vars/main.yml`)
+# vars.yaml File (if it's separate from `vars/main.yml`)
 
 If you are using an external `vars.yaml` file, it can be placed alongside the playbook:
 
@@ -192,8 +193,6 @@ apache_server_name: "Custom Apache Server"
 
 
 
-
-
 Ansible vault
 ==============
 
@@ -209,10 +208,8 @@ First, create a vault-encrypted file to store sensitive data.
 
 ansible-vault create secret.yml
 
-
 - Enter a vault password (remember this, you’ll need it later).
 - A text editor opens. Add the following sensitive data:
-
 
 db_password: "SuperSecretPassword123"
 api_key: "abcdef1234567890"
@@ -226,9 +223,7 @@ Now, check how Ansible Vault has encrypted your file:
 
 cat secret.yml
 
-✅ Expected Output:  
-The file should appear fully encrypted, something like this:
-
+Output: The file should appear fully encrypted, something like this:
 
 $ANSIBLE_VAULT;1.1;AES256
 6162636465663738393031323334353637383930...
@@ -265,7 +260,7 @@ cat secret.yml
 ---
 
 Step 5: Re-Encrypt the File
--------
+---------------------------
 
 To re-encrypt a decrypted file:
 
@@ -278,7 +273,7 @@ Enter the vault password, and it will be encrypted again.
 ---
 
 Step 6: Use Vault in a Playbook
--------
+-------------------------------
 
 Let’s create a playbook that uses the vault-encrypted variables.
 
@@ -506,7 +501,7 @@ ansible tag__Hosts -i aws_ec2.yml -m ping -u ec2-user --private-key /home/ec2-us
 📌 **Create a playbook** `install_apache.yml`:
 yaml
 - name: Install Apache on AWS EC2
-  hosts: tag_WebServers
+  hosts: tag__Host #instance lo yee name tho create cheysi untamo ade name ivvali and triple underscore
   become: yes
   tasks:
     - name: Install Apache
