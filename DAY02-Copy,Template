@@ -51,7 +51,6 @@ Example
 
 
 
-
 How to run a playbook?
 ------------------------
 
@@ -92,10 +91,11 @@ ansible-playbook ping.yaml
 example 2 playbook filename httpd.yaml
 --------------------------------------
 
-before writing a playbook plz create a filename httpd.html plz refer example 3 playbook filename demo.yaml at line number 137
+before writing a playbook plz create a filename httpd.yaml plz refer example 3 playbook filename demo.yaml at line number 137
 
 ---
 - hosts: all
+  gather_facts: yes
   become: true
 
   tasks:
@@ -122,7 +122,7 @@ ansible-playbook httpd.yaml
 
 ansible all -m shell -a "systemctl status httpd" ---------> to check all server IP address machines whether it is install or not
 
-ansible all -m shell -a ls -lrth /var/www/html ----------> another way to check install or not
+ansible all -m shell -a "ls -lrth /var/www/html" ----------> another way to check install or not
 
 
 
@@ -130,7 +130,7 @@ ansible all -m shell -a ls -lrth /var/www/html ----------> another way to check 
 
 IQ] what is the difference between copy module and template module?
 
-plz check difference where we are using copy at line number 188
+plz check difference where we are using copy at line number 181
 ** copy: copy will copy the file from local (ansible server) to remote machines.
 ** template: template will copy file from local(ansible server) to remote(host) machines, It replace the content using variables, while copying.
 
@@ -221,10 +221,10 @@ example 3 playbook filename demo2.yaml here i hardcoded the data for copy
 
   vars:
     page_title: "DevOps Practice Page"
-    name: "Lina Kumar"
+    name: "AnilKumar"
     phone: "9347888769"
     course: "DevOps course"
-    location: "Macharla, Guntur (Dist), Andhra Pradesh"
+    location: "Adoni, Kurnool (Dist), Andhra Pradesh"
 
   tasks:
     - name: Install httpd
@@ -242,7 +242,6 @@ example 3 playbook filename demo2.yaml here i hardcoded the data for copy
       copy:
         src: index.html
         dest: /var/www/html/index.html
-
 
 
 
@@ -389,7 +388,7 @@ save this ansible playbook with template2.yaml
 
     - name: Copy dynamic index.html to web root
       template:
-        src: index.html                   # Path to your local index.html file
+        src: /home/ec2-user/index.html                   # Path to your local index.html file
         dest: /var/www/html/index.html    # Destination on the target server
 
 
