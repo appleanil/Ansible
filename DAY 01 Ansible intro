@@ -503,6 +503,8 @@ ansible all -m shell -a "df -kh"       [ -a means arguments]
 
 ansible all -m shell -a "git --version"
 
+             (or)
+
 ansible AWS -b -m command -a "httpd -v"
 
 NOTE: in ansible default module is "shell"
