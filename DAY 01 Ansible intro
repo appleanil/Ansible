@@ -27,9 +27,6 @@ Ansible ఒక automation tool. ఇది ఒకేసారి multiple servers
 
 
 
-
-
-
 Introduction
 ===========
    Ansible is an open source, a Configuration Management Tool and Deployment tool, maintained by Redhat.
@@ -42,18 +39,12 @@ Introduction
 
 
 
-
-
-
 Configuration can be any task which we can perform on servers (hosts). It can be
 
 1)  Install/Update/Uninstalling software (packages)
 2)  Copy files. Changing the permissions on the files or directories.
 3)  Start/Stop/ Restart the services
 4)  Creating / deleting the users..........
-
-
-
 
 
 
@@ -68,11 +59,8 @@ Various Configuration Management Tools
 
 
 
-
-
 Ansible Features
 ================
-
    Ansible configure machines in an agent-less manner using SSH.
    Built on top of Python and hence provides a lot of Python’s functionality. YAML-Based Playbooks
    Uses SSH for secure connections.
@@ -93,18 +81,15 @@ Central server pushes the configuration information on target servers. You contr
 
 Ansible Architecture
 =====================
-
-
 https://www.google.com/search?sca_esv=8536d3cccb765549&sca_upv=1&rlz=1C1UEAD_enIN1101IN1102&sxsrf=ADLYWIK0P5dFDyf9SS8wj0ACVkOY-eTgQg:
 1727466226227&q=ansible+architecture&udm=2&fbs=AEQNm0DYVld7NGDZ8Pi819Yg8r6em07j6rW9d2jUMtr8MB7hthlxj_a5JB7GtKl9Rvi8UOrX6vOKeE8ctU8C4v5SDrHEsrg
 UOOFp5HvlkBZf4yVP83YajKnrlhAJvHG8uQnJWlvuYz8LvE_lwESvEPu-1v94fKd9xhS49UTuNSe7CMY7I5AuGmdDN0lv5iId0gIyD9wyA5aKEve0q31Gi2kwmyWtccpVrQ&sa=X&ved=
 2ahUKEwiolpqW8eOIAxW8R2wGHdidNlUQtKgLegQILRAB&biw=1440&bih=825&dpr=2#vhid=DpiNvVdi7i47aM&vssid=mosaic
 
 
+
 Host Inventory:
 ===============
-
-
 In Ansible, the host inventory is a file that defines the hosts (machines) that Ansible will manage. This file can be in various formats, 
 but the most common is the INI format. You can also use YAML format for more complex structures.
 
@@ -143,12 +128,12 @@ kkdevops.com
 -------------------
 It is a file in the ansible server. It contains the host machine details, Whenever we want to add/remove server information 
 we have to update the static inventory file manually.
+                                       -------------
 
 
 
 2. dynamic inventory
 --------------------
-
 It is an inventory that automatically fetches host information from external sources such as cloud providers, CMDBs, or scripts.
 The server details are generated dynamically at runtime, so manual updates are not required.
 
@@ -232,20 +217,16 @@ Example:
 
 📌 ఒక playbook లో ఒకటి లేదా ఎక్కువ plays ఉండొచ్చు
 
-🧠 Example (తెలుగులో):
-
-ఈ servers లో nginx install చేయాలి  👉 ఇది ఒక play
+🧠 Example: ఈ servers లో nginx install చేయాలి  👉 ఇది ఒక play
 
 
 
 
 2️⃣ Tasks అంటే ఏమిటి?
 
-👉 Task అంటే:
-
 server లో చేయాల్సిన ఒక పని
 
-ఉదాహరణ:  software install చేయడం, service start చేయడం, file copy చేయడం
+Example:  software install చేయడం, service start చేయడం, file copy చేయడం
 
 📌 ఒక play లో చాలా tasks ఉండొచ్చు
 
@@ -368,7 +349,6 @@ we can implement our own modules using the python, But thousands of predefined m
 
 
 
-
 ===============================================================================================================================================
 
 
@@ -451,7 +431,7 @@ ansible all -m ping
 
 🔸 all ----------- Inventory లో ఉన్న అన్ని servers 
 
-🔸 -m ping --------ping module ఉపయోగించు
+🔸 -m ping ------- ping module ఉపయోగించు
 
 ఇది network ping కాదు
 
@@ -513,37 +493,17 @@ server2 | SUCCESS => ping=pong
 
 
 
-
-
-How to list the ansible modules
----------------------------------
-
-1. ansible-doc copy    👉 copy module documentation చూపిస్తుంది
-                       👉 files ని local → remote servers కి copy చేయడానికి ఉపయోగిస్తారు
-
-
-2. ansible-doc yum     👉 yum module documentation చూపిస్తుంది
-                       👉 RHEL / CentOS servers లో packages install చేయడానికి ఉపయోగిస్తారు
-
-
-3.ansible-doc shell    👉 shell module documentation చూపిస్తుంది
-                       👉 remote servers లో shell commands run చేయడానికి ఉపయోగిస్తారు
-
-
-4. ansible-doc -l | grep "copy"     👉 modules list లో "copy" word ఉన్న modules మాత్రమే filter చేసి చూపిస్తుంది
-
-
-
-
 some sample commands
 ====================
 
-shell module
-------------
+shell module: To check status
+-----------------------------
 
-ansible all -m shell -a "df -kh"       [ a means arguments]
+ansible all -m shell -a "df -kh"       [ -a means arguments]
 
 ansible all -m shell -a "git --version"
+
+ansible AWS -b -m command -a "httpd -v"
 
 NOTE: in ansible default module is "shell"
 
@@ -552,15 +512,42 @@ ansible all -m shell -a "uptime" or ansible all -a "uptime"
 
 IQ] instead of checking all the servers how to check for specific servers like DB or app
 
+1. sudo vi /etc/ansible/hosts
 
-ansible app -a "free -h"
-ansible db -a "date"
+2. [app]
+   app1 ansible_host=172.31.0.113
+   app2 ansible_host=172.31.3.49
+
+   [db]
+   db1 ansible_host=172.31.3.101
+
+   [prod:children]
+   app
+   db
+
+3. ansible app -m shell -a "zip --version"
+
+4. ansible db -b -m yum -a "name=zip state=present"
+
+5. Target multiple groups together ---------> ansible app:db -m ping
+
+6. Exclude a group ------> ansible all:!db -m ping
+
+7. ansible app -a "free -h"
+
+8. ansible db -a "date"
+
+9. ansible db -m ping -----> only db
 
 
-yum module
-----------
+
+
+yum module: To install
+----------------------
 
 ansible all -b -m yum -a "name=git"  ----> install git
+
+ansible all -b -m yum -a "name=git,vim,zip state=absent"  --------> uninstall
 
 ansible all -b -m yum -a "name=java" ----> install java
 
@@ -577,13 +564,12 @@ ansible all -b -m yum -a "name=httpd state=absent" ---> to remove/uninstall http
 
 
 
-service module
---------------
+service module: To start, stop, restart
+---------------------------------------
 
 ansible 172.31.43.147 -b -m service -a "name=httpd state=started"
 
 ansible all -b -m command -a "systemctl status httpd"
-
 
 ansible all -b -m service -a "name=httpd state=restarted"
 
