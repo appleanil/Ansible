@@ -70,18 +70,50 @@ ansible all -b -m command -a "touch security.py"
 example 1 playbook filename ping.yaml
 -------------------------------------
 
-- hosts: all
+---
+- name: Create a file
+  hosts: all
   become: true
+  gather_facts: yes
 
   tasks:
-    - name: Create a file in all host machines
+    - name: Create a file anil.yaml
       file:
-        path: /tmp/security.py
+        path: /home/ec2-user/anil.yaml
         owner: ec2-user
         group: ec2-user
-        mode: '0777'
+        mode: '0644'
         state: touch
 
+
+example 2 playbook filename anil.yaml
+-------------------------------------
+---
+- name: Create a file based on OS
+  hosts: all
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: Create file on Amazon Linux
+      file:
+        path: /home/ec2-user/anil.yaml
+        owner: ec2-user
+        group: ec2-user
+        mode: '0644'
+        state: touch
+      when: ansible_os_family == "RedHat"
+
+    - name: Create file on Ubuntu
+      file:
+        path: /home/ubuntu/anil.yaml
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+        state: touch
+      when: ansible_os_family == "Debian"
+
+in any different server like amazon,redhat,ubuntu... use above yaml file 
 
 ansible-playbook ping.yaml --syntax-check
 
@@ -688,6 +720,9 @@ IQ] what is the difference between tasks and handlers?
 --> handlers are special kind of tasks, It will not executed by default, until other tasks are notify.
 
 --> Handlers will execute at end of the play.
+
+--> Handlers yenti ante just ee okka point chudu copy file lo emina update jaringindi ante appudu maki notify cheyali kadha so anduke 
+    handlers ane module use avthundu
 
 
 Example 1 without changes in index.html
