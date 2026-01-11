@@ -412,15 +412,60 @@ Run in the ansible server
 
 sudo yum install ansible-core -y
 
-
-sudo su - ansible
+chmod 400 /home/ec2-user/1111.pem
 
 sudo vi /etc/ansible/hosts
 
-[my_hosts]
-172.31.3.215 ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+[amazon]
+172.31.9.47 ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/1111.pem
 
-172.31.6.156 ansible_ssh_user=ec2-user ansible_ssh_private_key_file=~/kkdevopsb7.pem
+[ubuntu]
+172.31.14.241 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ec2-user/1111.pem
+
+or
+
+IQ] instead of checking all the servers IP address how to check for specific servers names like DB or app
+
+1. sudo vi /etc/ansible/hosts
+
+2. [app]
+   app1 ansible_host=172.31.0.113
+   app2 ansible_host=172.31.3.49
+
+   [db]
+   db1 ansible_host=172.31.3.101
+
+   [prod:children]
+   app
+   db
+
+[amazon]
+amazon ansible_host=172.31.9.47 ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/1111.pem ansible_python_interpreter=/usr/bin/python3
+
+[ubuntu]
+ubuntu ansible_host=172.31.14.241 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ec2-user/1111.pem ansible_python_interpreter=/usr/bin/python3
+
+or
+
+[amazon]
+amazon ansible_host=172.31.9.47 ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/1111.pem
+
+[ubuntu]
+ubuntu ansible_host=172.31.14.241 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ec2-user/1111.pem
+
+
+output: in the server name
+--------------------------
+
+amazon | SUCCESS => {
+    "ping": "pong"
+}
+
+ubuntu | SUCCESS => {
+    "ping": "pong"
+}
+
+
 
 
 NOTE: pls copy the pem file into linux server
@@ -505,29 +550,13 @@ ansible all -m shell -a "git --version"
 
              (or)
 
-ansible AWS -b -m command -a "httpd -v"
+ansible ubuntu -b -m command -a "httpd -v"
 
 NOTE: in ansible default module is "shell"
 
 ansible all -m shell -a "uptime" or ansible all -a "uptime"
 
-
-IQ] instead of checking all the servers how to check for specific servers like DB or app
-
-1. sudo vi /etc/ansible/hosts
-
-2. [app]
-   app1 ansible_host=172.31.0.113
-   app2 ansible_host=172.31.3.49
-
-   [db]
-   db1 ansible_host=172.31.3.101
-
-   [prod:children]
-   app
-   db
-
-3. ansible app -m shell -a "zip --version"
+3. ansible prod -m shell -a "zip --version"
 
 4. ansible db -b -m yum -a "name=zip state=present"
 
@@ -562,6 +591,11 @@ ansible all -b -m yum -a "name=httpd state=present" --> Install httpd package in
 ansible all -b -m yum -a "name=httpd state=latest" ---> to update the httpd packages
 
 ansible all -b -m yum -a "name=httpd state=absent" ---> to remove/uninstall httpd package
+
+ansible ubuntu -b -m apt -a "name=git state=present update_cache=yes" -------> dnt show cache
+
+ansible all -b -m package -a "name=git state=present" --------> if we have two r more different servers like amazon, ubuntu, rhel then use 
+
 
 
 
