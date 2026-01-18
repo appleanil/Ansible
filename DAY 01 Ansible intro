@@ -587,7 +587,7 @@ ansible all -b -m yum -a "name=httpd state=present" --> Install httpd package in
 
 ansible all -b -m yum -a "name=httpd state=latest" ---> to update the httpd packages
 
-ansible all -b -m package -a "name='httpd*' state=absent" ------------> to remove httpd/uninstall
+ansible all -b -m package -a "name='httpd*' state=absent" ------------> to remove httpd/uninstall for we need to give 'git*' 'zip*' 'tar*'
 
 ansible ubuntu -b -m apt -a "name=git state=present update_cache=yes" -------> dnt show cache
 
