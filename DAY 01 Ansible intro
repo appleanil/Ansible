@@ -40,7 +40,7 @@ Introduction
 
 
 Configuration can be any task which we can perform on servers (hosts). It can be
-
+for example to search in chtgpt
 1)  Install/Update/Uninstalling software (packages)
 2)  Copy files. Changing the permissions on the files or directories.
 3)  Start/Stop/ Restart the services
@@ -161,9 +161,9 @@ Ansible playbook లో plays, tasks, modules, variables, handlers, conditionals
 
 
 PlayBooks
-==========
+=========
 
--> An Ansible playbook is a YAML file that defines a set of tasks to be executed on one or more  hosts. 
+-> An Ansible playbook is a YAML file that defines a set of tasks to be executed on one or more hosts. 
 
 
 Key Components of a Playbook
@@ -264,12 +264,9 @@ values ని change చేయడానికి ఉపయోగిస్తా�
 
 ఉదాహరణ: software name, port number, username
 
-🧠 Example:
-package_name: nginx
+🧠 Example: package_name: nginx
 
-👉 తర్వాత:
-
-name: "{{ package_name }}"
+👉 తర్వాత: name: "{{ package_name }}"
 
 📌 ఒకసారి change చేస్తే everywhere update అవుతుంది 👍
 
@@ -320,7 +317,7 @@ Easy Telugu Reading Style (Audio-like 😄)
 
 Play అంటే –--------- ఏ server లో ఏ పని చేయాలో చెప్పడం
 
-Task అంటే –----------server లో చేసే ఒక పని
+Task అంటే –--------- server లో చేసే ఒక పని
 
 Module అంటే –------- ఆ పని చేయడానికి ఉపయోగించే tool
 
