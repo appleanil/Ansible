@@ -65,7 +65,9 @@ while practise plz check these commands difference then write what i understand
 
 ansible all -b -m copy -a "src=security.py dest=/tmp/security.py" 
 
-ansible all -b -m command -a "touch security.py"
+(waste) ansible all -b -m command -a "touch security.py"   (or)  (good) ansible all -b -m file -a "path=demo.txt state=touch"
+
+ansible all -b -m file -a "path=demo.txt state=absent"
 
 example 1 playbook filename ping.yaml
 -------------------------------------
@@ -113,7 +115,7 @@ example 2 playbook filename anil.yaml
         state: touch
       when: ansible_os_family == "Debian"
 
-in any different server like amazon,redhat,ubuntu... use above yaml file 
+in any different server like amazon,redhat,ubuntu... use above yaml file when command use 
 
 ansible-playbook ping.yaml --syntax-check
 
@@ -123,7 +125,7 @@ ansible-playbook ping.yaml
 example 2 playbook filename httpd.yaml
 --------------------------------------
 
-before writing a playbook plz create a filename httpd.yaml plz refer example 3 playbook filename demo.yaml at line number 137
+before writing a playbook plz create a filename httpd.yaml plz refer example 3 playbook filename demo.yaml
 
 ---
 - hosts: all
@@ -162,9 +164,10 @@ ansible all -m shell -a "ls -lrth /var/www/html" ----------> another way to chec
 
 IQ] what is the difference between copy module and template module?
 
-plz check difference where we are using copy at line number 181
+plz check difference where we are using copy
 ** copy: copy will copy the file from local (ansible server) to remote machines.
 ** template: template will copy file from local(ansible server) to remote(host) machines, It replace the content using variables, while copying.
+template మాడ్యూల్ అనేది ఫైల్ లో variables ({{ }}) ఉపయోగించి, ప్రతి సర్వర్ కి డైనమిక్‌గా (dynamic) కంటెంట్ మార్చడానికి ఉపయోగిస్తారు.
 
 
 
@@ -185,7 +188,7 @@ save index.html ekkada nenu data antha hardcoded chey ledu
 
   <p> I am learning <strong>DevOps course</strong> from <strong>Location: Adoni, Kurnool (Dist), Andhra Pradesh</strong>.</p>
 
-  <p> <strong>Privacy:</strong> Hardcore Dynamic </p>
+  <p> <strong>Privacy:</strong> Hardcode Dynamic </p>
 
 </body>
 </html>
@@ -285,8 +288,8 @@ Template module
 before writing a playbook plz create a filename index.html in that file insert some data like privacy to hardcoded dynamic name and location and some other
 
 
-example 4 Template template.yaml at line number 321 its will changes lines
---------------------------------------------------------------------------
+example 4 Template template.yaml 
+--------------------------------
 create two yaml files for check difference between using template and template vars save index.html
 
 <!DOCTYPE html>
@@ -518,12 +521,13 @@ another approach
 step 1: create separate vars.yaml
 
     page_title: "DevOps Automation Page"
-    name: "Anil Kumar"                                        # Change this to your server name
-    phone: "6303717004"                                       # Change this to your desired document root
+    name: "Anil Kumar"
+    phone: "6303717004"
     course: "DevOps Course"
-    location: "Adoni, Kurnool (Dist), Andhra Pradesh, India"  #
+    location: "Adoni, Kurnool (Dist), Andhra Pradesh, India"
     OS: "Amazon Linux 2023"
     automation_tool: "Ansible Automation"
+
 
 step 2: create index.html
 
@@ -554,16 +558,29 @@ step 2: create index.html
 
 step 3: create a playbook name.yaml
 
+---
 - name: Install and configure Apache HTTP server
-  hosts: all  # Specify your target hosts group
-  become: true  # Use sudo to install packages
+  hosts: all
+  become: true
+  gather_facts: yes
+
+  # Second priority variables only
   vars_files:
-   - vars.yaml #name.yaml
+    - vars.yaml
+
   tasks:
-    - name: Install httpd
-      yum:  # Use yum for Red Hat/CentOS or dnf for newer versions
+    - name: showing installation start msg
+      debug:
+        msg: "installing httpd"
+
+    - name: Installing httpd
+      yum:
         name: httpd
         state: present
+
+    - name: showing httpd installation completed msg
+      debug:
+        msg: "installation completed httpd"
 
     - name: Ensure httpd is started and enabled
       service:
@@ -573,8 +590,9 @@ step 3: create a playbook name.yaml
 
     - name: Copy custom index.html to the web root
       template:
-        src: index.html  # Path to your local index.html file
-        dest: /var/www/html/index.html  # Destination on the target server
+        src: index.html
+        dest: /var/www/html/index.html
+
 
 
 
@@ -664,7 +682,7 @@ Example - 2 for debug module & template module
   # Third priority variables
   vars:
     location: "Tirupathi"
-    phoneNo: "000000000"
+    phone: "000000000"
 
   tasks:
     - name: showing installation start msg
