@@ -1,4 +1,4 @@
-Ansible
+veAnsible
 =======
 
    Linux 
@@ -587,7 +587,7 @@ ansible all -b -m yum -a "name=httpd state=present" --> Install httpd package in
 
 ansible all -b -m yum -a "name=httpd state=latest" ---> to update the httpd packages
 
-ansible all -b -m yum -a "name=httpd state=absent" ---> to remove/uninstall httpd package
+ansible all -b -m package -a "name='httpd*' state=absent" ------------> to remove httpd/uninstall
 
 ansible ubuntu -b -m apt -a "name=git state=present update_cache=yes" -------> dnt show cache
 
@@ -597,8 +597,8 @@ ansible all -b -m package -a "name=git state=present" --------> if we have two r
 
 
 
-service module: To start, stop, restart
----------------------------------------
+service module: To start, stop, restart, remove
+-----------------------------------------------
 
 ansible 172.31.43.147 -b -m service -a "name=httpd state=started"
 
@@ -607,3 +607,6 @@ ansible all -b -m command -a "systemctl status httpd"
 ansible all -b -m service -a "name=httpd state=restarted"
 
 ansible all -b -m service -a "name=httpd state=stopped"
+
+ansible all -b -m package -a "name='httpd*' state=absent" ------------> to remove httpd/uninstall
+
