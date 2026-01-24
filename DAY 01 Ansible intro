@@ -1,4 +1,4 @@
-veAnsible
+Ansible
 =======
 
    Linux 
@@ -39,7 +39,7 @@ Introduction
 
 
 
-Configuration can be any task which we can perform on servers (hosts). It can be
+Configuration can be any task which we can perform on servers (hosts).
 for example to search in chtgpt
 1)  Install/Update/Uninstalling software (packages)
 2)  Copy files. Changing the permissions on the files or directories.
@@ -51,7 +51,6 @@ for example to search in chtgpt
 
 Various Configuration Management Tools
 ======================================
-
 •   Ansible
 •   Chef
 •   Puppet
@@ -134,7 +133,8 @@ we have to update the static inventory file manually.
 
 2. dynamic inventory
 --------------------
-It is an inventory that automatically fetches host information from external sources such as cloud providers, CMDBs, or scripts.
+It is an inventory that automatically fetches host information from external sources such as cloud providers, CMDB(Configuration Management Database.),
+or scripts.
 The server details are generated dynamically at runtime, so manual updates are not required.
 
 Dynamic inventory is commonly used in cloud environments where servers are frequently created and terminated.
@@ -187,24 +187,12 @@ Key Components of a Playbook
 Example:
 --------
 
-- name: Install Git on all servers
-  hosts: all
+- name: Install Git on all servers or database servers
+  hosts: all # or databases
   tasks:
     - name: Install Git
       yum:
         name: git
-        state: present
-
-
-Example:
---------
-
-- name: Install Unzip on Database Servers
-  hosts: dbservers
-  tasks:
-    - name: Install Unzip
-      yum:
-        name: unzip
         state: present
 
 
