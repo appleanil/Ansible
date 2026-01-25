@@ -1,3 +1,5 @@
+Roles-based Ansible project లో inventory, vars, playbooks, roles అన్నీ separate గా ఉంచడం వల్ల automation scalable, reusable, maintainable అవుతుంది.
+
 ansible-project/
 ├── ansible.cfg
 ├── inventory/
@@ -72,3 +74,231 @@ ansible-project/
 │   └── motd.j2
 │
 └── README.md
+
+
+1. ansible.cfg 
+--------------
+[defaults]
+inventory = inventory/hosts.ini
+roles_path = roles
+host_key_checking = False
+remote_user = ec2-user
+
+
+2. inventory
+------------
+[webservers]
+web1
+web2
+
+[dbservers]
+db1
+
+
+3. inventory/dev.ini
+--------------------
+[webservers]
+dev-web1
+
+
+4. inventory/prod.ini
+---------------------
+[webservers]
+prod-web1
+prod-web2
+
+
+group_vars
+==========
+1. group_vars/all.yml
+---------------------
+timezone: Asia/Kolkata
+company: MyCompany
+
+2. group_vars/webservers.yml
+----------------------------
+web_port: 80
+web_service: httpd
+
+3. group_vars/dbservers.yml
+---------------------------
+db_port: 3306
+db_service: mysql
+
+
+host vars
+=========
+1. host_vars/web1.yml
+----------------------
+server_name: web1.example.com
+
+2. host_vars/db1.yml
+--------------------
+mysql_root_password: root123
+
+
+playbooks
+=========
+playbooks/site.yml
+------------------
+- hosts: all
+  become: true
+  roles:
+    - common
+
+playbooks/web.yml
+-----------------
+- hosts: webservers
+  become: true
+  roles:
+    - httpd
+
+playbooks/db.yml
+----------------
+- hosts: dbservers
+  become: true
+  roles:
+    - mysql
+
+roles/common
+============
+roles/common/defaults/main.yml
+------------------------------
+common_packages:
+  - vim
+  - git
+
+roles/common/tasks/main.yml
+---------------------------
+- name: Install common packages
+  yum:
+    name: "{{ common_packages }}"
+    state: present
+
+roles/common/handlers/main.yml
+------------------------------
+- name: reload ssh
+  service:
+    name: sshd
+    state: restarted
+
+roles/common/README.md
+----------------------
+Role: common  
+Purpose: Install base packages and configs
+
+
+roles/mysql
+===========
+roles/mysql/defaults/main.yml
+-----------------------------
+mysql_pkg: mysql-server
+
+
+roles/mysql/tasks/main.yml
+--------------------------
+- name: Install MySQL
+  yum:
+    name: "{{ mysql_pkg }}"
+    state: present
+
+
+🐳 roles/docker
+===============
+roles/docker/tasks/main.yml
+---------------------------
+- name: Install Docker
+  yum:
+    name: docker
+    state: present
+
+- name: Start Docker
+  service:
+    name: docker
+    state: started
+
+
+📊 roles/monitoring
+===================
+roles/monitoring/tasks/main.yml
+-------------------------------
+- name: Install monitoring tool
+  yum:
+    name: htop
+    state: present
+
+
+🌍 vars
+========
+vars/global.yml
+---------------
+env: production
+owner: DevOpsTeam
+
+
+📄 files
+========
+files/banner.txt
+----------------
+Authorized access only!
+
+📄 templates
+===========
+templates/motd.j2
+-----------------
+Welcome {{ inventory_hostname }}
+Managed by Ansible
+
+📘 Root README.md
+=================
+Ansible Roles-Based Project
+Supports Web, DB, Docker, Monitoring automation
+
+
+🧠 Interview Memory Trick ------> inventory → vars → playbooks → roles → tasks → handlers → templates/files
+
+
+
+Ansible Roles-Based Project Structure some more
+-----------------------------------------------
+
+httpd/
+├── defaults/
+│   └── main.yml
+├── files/
+├── handlers/
+│   └── main.yml
+├── meta/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+├── tests/
+│   ├── inventory
+│   └── test.yml
+├── vars/
+│   └── main.yml
+└── README.md
+
+for all same only u can refer in chtgpt also
+
+1. ansible-galaxy init nginx -y
+
+2. ansible-galaxy init apache -y or ansible-galaxy init httpd -y
+
+3. ansible-galaxy init mysql -y
+
+4. ansible-galaxy init docker -y
+
+5. ansible-galaxy init jenkins -y
+
+6. ansible-galaxy init tomcat -y
+
+7. ansible-galaxy init users -y
+
+8. ansible-galaxy init common -y
+
+9. ansible-galaxy init security -y
+
+10. ansible-galaxy init monitoring -y
+
