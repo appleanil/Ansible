@@ -345,6 +345,8 @@ Instead of encrypting just variables, encrypt an entire playbook --------> ansib
 
 To run playbook by asking decrypt/vault password                --------> ansible-playbook playbook.yml --ask-vault-pass
 
+playbook lo unna vars file lo secret.yaml same password undali
+
 
 NOTE : if you want to reset the password ,pls use this command ---------> ansible-vault rekey abc.yaml
 
