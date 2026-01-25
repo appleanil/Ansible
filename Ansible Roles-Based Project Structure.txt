@@ -1,0 +1,74 @@
+ansible-project/
+├── ansible.cfg
+├── inventory/
+│   ├── hosts.ini
+│   ├── dev.ini
+│   └── prod.ini
+│
+├── group_vars/
+│   ├── all.yml
+│   ├── webservers.yml
+│   └── dbservers.yml
+│
+├── host_vars/
+│   ├── web1.yml
+│   └── db1.yml
+│
+├── playbooks/
+│   ├── site.yml
+│   ├── web.yml
+│   └── db.yml
+│
+├── roles/
+│   ├── common/
+│   │   ├── defaults/
+│   │   │   └── main.yml
+│   │   ├── tasks/
+│   │   │   └── main.yml
+│   │   ├── handlers/
+│   │   │   └── main.yml
+│   │   └── README.md
+│   │
+│   ├── httpd/
+│   │   ├── defaults/
+│   │   │   └── main.yml
+│   │   ├── vars/
+│   │   │   └── main.yml
+│   │   ├── tasks/
+│   │   │   └── main.yml
+│   │   ├── handlers/
+│   │   │   └── main.yml
+│   │   ├── templates/
+│   │   │   └── index.html.j2
+│   │   ├── files/
+│   │   └── README.md
+│   │
+│   ├── mysql/
+│   │   ├── defaults/
+│   │   ├── vars/
+│   │   ├── tasks/
+│   │   ├── handlers/
+│   │   └── README.md
+│   │
+│   ├── docker/
+│   │   ├── defaults/
+│   │   ├── tasks/
+│   │   ├── handlers/
+│   │   └── README.md
+│   │
+│   └── monitoring/
+│       ├── defaults/
+│       ├── tasks/
+│       ├── handlers/
+│       └── README.md
+│
+├── vars/
+│   └── global.yml
+│
+├── files/
+│   └── banner.txt
+│
+├── templates/
+│   └── motd.j2
+│
+└── README.md
