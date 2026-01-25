@@ -510,9 +510,9 @@ variables in ansible
 =====================
 IQ] can you explain varibles and its priority in ansible?
 
-1. command line variables
-2. variables in file
-3. variables in play-book
+1. command line variables  ----> example: ansible-playbook template1.yaml -e page_title="DevOps Practice Page"
+2. variables in file       ----> example: create separate vars.yaml and insert some data check below example
+3. variables in play-book  ----> example: inside yamlfile
 
 
 another approach
