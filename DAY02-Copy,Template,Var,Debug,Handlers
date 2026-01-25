@@ -594,7 +594,7 @@ step 3: create a playbook name.yaml
         dest: /var/www/html/index.html
 
 
-
+ansible all -b -m package -a "name='httpd*' state=present"
 
 ***IQ] if i defined variables in plabook and vars.yaml which one will take?
 
