@@ -292,7 +292,8 @@ yaml
 
 
 
-Run the playbook with Vault --------------> ansible-playbook vaulttest.yaml --ask-vault-pass
+Run the playbook with Vault --------------> ansible-playbook playbook.yaml --ask-vault-pass
+ ALWAYS USE THE SAME VAULT PASSWORD FOR secret.yaml AND playbook.yaml WHILE EXECUTING THE COMMAND.
 
 
 ✅ Expected Output:
@@ -311,15 +312,19 @@ Instead of manually entering the vault password, store it in a file:
 
 1️⃣ Create a password file:
 
-echo "kkdevops" > vault-password.txt
+echo "123456" > password.txt
 chmod 600 vault-password.txt
+
+123456 password kuda automation cheyvachu yappudu?
+
+playbook lo unna vars file lo secret.yaml same password undali and password.txt same undali appude mana password kuda automcate cheyvchu
 
 
 2️⃣ Run the playbook using the password file:
 
 ansible-playbook vaulttest.yaml --vault-password-file password.txt 
 
-vaulttest.yaml encrypt lo untadi dani decript cheysi password.txt lo show cheysthundi
+vaulttest.yaml encrypt lo untadi dani decrypt cheysi password.txt lo visible cheysthundi
 
 
 
