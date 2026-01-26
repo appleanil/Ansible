@@ -1,6 +1,8 @@
 roles in ansible
 ================
 
+“I used ansible-galaxy to initialize a role and implemented OS-aware Apache uninstallation using variables and the package module.”
+
 Roles in Ansible are a way to organize playbooks into reusable components.
 
 Creating a Role
@@ -69,8 +71,7 @@ yaml
   template:
     src: index.html  # Path to your local index.html template
     dest: /var/www/html/index.html  # Destination on the target server
-  notify:
-    - restarting httpd
+  notify: restarting httpd
   tags: deploy
 
 
@@ -131,7 +132,7 @@ yaml
 ---
 # handlers/main.yml
 
-- name: restarting httpd
+- name: restart httpd
   service:
     name: httpd
     state: restarted
@@ -170,7 +171,7 @@ yaml
 
 # vars.yaml File (if it's separate from `vars/main.yml`)
 
-If you are using an external `vars.yaml` file, it can be placed alongside the playbook:
+If you are using an external `vars.yaml` file, it can be placed along inside the playbook:
 
 yaml
 ---
