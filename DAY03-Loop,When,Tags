@@ -137,41 +137,27 @@ with-loops & debug yaml file
 i want install in redhat only then ask chtght and ask when condition statements also so that we can do more practises
 
 ---
-- name: Install packages with loops
+- name: Install packages using loop (optimized)
   hosts: all
   become: yes
 
+  vars:
+    packages:
+      - git
+      - zip
+      - vim
+      - unzip
+      - tree
+
   tasks:
-    - name: Debug - Starting installation of packages
+    - name: Display packages to be installed
       debug:
-        msg: "Installing package: {{ item }}"
-      loop:
-        - git
-        - zip
-        - vim
-        - unzip
-        - tree
+        msg: "Packages to be installed: {{ packages }}"
 
     - name: Install packages
       yum:
-        name: "{{ item }}"
+        name: "{{ packages }}"
         state: present
-      loop:
-        - git
-        - zip
-        - vim
-        - unzip
-        - tree
-
-    - name: Debug - Package installation completed
-      debug:
-        msg: "Installation completed for package: {{ item }}"
-      loop:
-        - git
-        - zip
-        - vim
-        - unzip
-        - tree
 
                  ------------------------------------------------------------------------------------------------
                            AFTER THIS PLAYBOOK, YOU NEED TO DO THIS AS ABSENT MEANS UNINSTALL THE PACKAGES
