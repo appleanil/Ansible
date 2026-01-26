@@ -774,32 +774,36 @@ example 2 after changes then use restart with handlers
 -------------------------------------------------------
 just changes in index.html
 
-- name: Install and configure Apache HTTP server
-  hosts: all  
-  gather_facts: no
-  become: true  
+- name: Deploy httpd in all servers
+  hosts: all
+  become: true
+  gather_facts: yes
+
   vars_files:
-   - vars.yaml
+    - users.yaml
+
   tasks:
+    - name: Display install httpd
+      debug:
+        msg: "[DEBUG] Installing httpd"
+
     - name: Install httpd
-      yum:  
+      yum:
         name: httpd
         state: present
+      tags: install
 
-    - name: Ensure httpd is started and enabled
-      service:
-        name: httpd
-        state: started
-        enabled: true
-
-    - name: Copy custom index.html to the web root
+    - name: Copy index.html
       template:
-        src: index.html  # Path to your local index.html file
-        dest: /var/www/html/index.html  # Destination on the target server
-      notify:
-        - restarting httpd
+        src: index.html
+        dest: /var/www/html/index.html
+        mode: '0644'
+      notify: restart httpd
+      tags: deploy
+
   handlers:
-    - name: restarting httpd
+    - name: restart httpd
       service:
         name: httpd
         state: restarted
+        enabled: yes
