@@ -11,3 +11,240 @@ copy all server public address and paste in ansible main server
 
 sudo vi /etc/ansible/hosts
 
+1. [app]
+   app1 ansible_host=172.31.0.113
+   app2 ansible_host=172.31.3.49
+
+   [db]
+   db1 ansible_host=172.31.3.101
+
+   [prod:children]
+   app
+   db
+
+2. [amazon]
+   amazon ansible_host=172.31.9.47 ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/1111.pem ansible_python_interpreter=/usr/bin/python3
+
+   [ubuntu]
+   ubuntu ansible_host=172.31.14.241 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ec2-user/1111.pem ansible_python_interpreter=/usr/bin/python3
+
+or
+
+3. [amazon]
+   amazon ansible_host=172.31.9.47 ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/1111.pem
+
+   [ubuntu]
+   ubuntu ansible_host=172.31.14.241 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ec2-user/1111.pem
+
+
+check the connection for all servers
+-----------------------------------
+ansible all -m ping
+
+write one ping.yaml for all servers pinging or not in playbook format
+---------------------------------------------------------------------
+- name: Checking all servers pinging
+  become: true
+  gather_facts: yes
+  hosts: all # or db server, frontend, prod, env, someelse
+
+  tasks:
+    - name: ping module
+      ping:
+
+save ping.yaml ------> check ansible-playbook ping.yaml
+
+write a yaml file to create a file, copy, template, vars, debug, handlers, loops, when, tags through playbook by file module
+----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+1. Ansible roles concept:
+-------------------------
+ansible-galaxy init httpd or apache2
+
+httpd/
+├── defaults/
+│   └── main.yml          # default variables (lowest priority)
+├── files/
+│   └── README.md
+├── handlers/
+│   └── main.yml          4. # handlers (restart httpd)
+├── meta/
+│   └── main.yml
+├── tasks/
+│   └── main.yml          3. # main tasks
+├── templates/
+│   └── index.html        1. # ✅ TEMPLATE FILE
+├── tests/
+│   ├── inventory
+│   └── test.yml
+└── vars/
+    └── main.yml         2.  # role variables (high priority)
+
+write a yaml for main playbook to connect for roles ---------> ansible-playbook site.yaml
+
+
+
+2. Ansible vault concept:
+-------------------------
+
+ANSIBLE VAULT – ONE-PAGE CHEAT SHEET
+------------------------------------
+
+Create / Encrypt / Decrypt
+--------------------------
+1. ansible-vault create file.txt -> create and encrypt a new file
+2. ansible-vault encrypt file.txt -> encrypt an existing file
+3. ansible-vault decrypt file.txt -> decrypt an encrypted file
+4. ansible-vault edit file.txt -> edit an encrypted file
+5. ansible-vault view file.txt -> view encrypted file (read-only)
+
+Password Management
+-------------------
+6. ansible-vault rekey file.txt -> change vault password
+7. ansible-vault encrypt_string 'secret' -> encrypt a single value
+8. ansible-vault encrypt_string 'secret' --name 'var_name' -> encrypt string as variable
+
+Playbook Execution
+------------------
+9. ansible-playbook site.yaml --ask-vault-pass -> prompt for vault password
+10. ansible-playbook site.yaml --vault-password-file pass.txt -> auto-run using password file
+
+NOTE:
+pass.txt must be plain text, never encrypted
+
+Vault with Variables
+--------------------
+11. ansible-vault create group_vars/all/vault.yaml -> encrypted vars file
+12. ansible-vault view group_vars/all/vault.yaml -> view encrypted vars
+
+Validation & Debug
+------------------
+13. ansible-playbook site.yaml --check -> dry run
+14. ansible-playbook site.yaml --diff -> show file changes
+15. ansible-playbook site.yaml --syntax-check -> validate syntax
+16. ansible-playbook site.yaml -vvv -> verbose debug output
+
+
+Golden Rules
+- create is only for new files
+- existing file use encrypt or edit
+- password file must not be encrypted
+- view is read-only, edit modifies content
+
+
+
+
+3. Ansible Dyanmic Inventory
+----------------------------
+step one:
+---------
+sudo yum update -y
+sudo yum install python3 -y
+sudo yum install python3-pip -y
+sudo pip install boto3 botocore
+
+pip3 --version
+
+
+step two AWS cli
+----------------
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+sudo yum install unzip -y
+unzip awscliv2.zip
+sudo ./aws/install
+
+aws --version
+
+
+step three aws configure
+------------------------
+
+[default]
+aws_access_key_id = YOUR_ACCESS_KEY
+aws_secret_access_key = YOUR_SECRET_KEY
+region = ap-south-1
+
+
+
+Ensure the AWS collection is installed:
+
+step four ---------> ansible-galaxy collection install amazon.aws
+
+
+
+Step five Create an inventory configuration file
+-------------------------------------------------
+
+mkdir -p ~/ansible/inventory
+cd ~/ansible/inventory
+
+
+Create a file `aws_ec2.yml`:
+
+plugin: amazon.aws.aws_ec2
+regions:
+  - ap-south-1
+filters:
+  instance-state-name: running
+keyed_groups:
+  - key: tags.Name
+    prefix: "tag_"
+compose:
+  ansible_host: public_ip_address
+
+
+ansible-inventory -i aws_ec2.yml --list
+
+ansible-inventory -i aws_ec2.yaml --graph    check how many instances are created
+
+ping mode
+
+ansible all -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
+
+ansible tag___Hosts_1 -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
+
+ansible tag___Hosts_2 -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
+
+ansible all -i aws_ec2.yaml -m shell -a "uptime" -u ec2-user --private-key /home/ec2-user/1111.pem
+
+
+
+
+
+*Create a playbook** install_apache.yaml
+yaml
+- name: Install Apache on AWS EC2
+  hosts: tag___Host_1     # EXACT which is creates in ec2_instance_names group name from ansible-inventory --graph
+  become: yes
+
+  tasks:
+    - name: Install Apache
+      ansible.builtin.yum:  #or use yum
+        name: httpd
+        state: present
+
+    - name: Start Apache Service
+      ansible.builtin.service:  # or use service
+        name: httpd
+        state: started
+        enabled: yes
+
+Run the playbook ----> ansible-playbook -i aws_ec2.yaml install_apache.yaml -u ec2-user --private-key /home/ec2-user/1111.pem
+
+
+
+
+ **📌 Summary**
+1. Install `boto3` and `ansible-galaxy collection install amazon.aws`
+2. Set up AWS credentials.
+3. Create `aws_ec2.yml` for dynamic inventory.
+4. Test with `ansible-inventory --list`
+5. Run Ansible commands on AWS EC2 instances.
+6. Deploy Playbooks dynamically.
+
+
+
+
