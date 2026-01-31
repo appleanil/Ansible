@@ -71,7 +71,7 @@ yaml
   template:
     src: index.html  # Path to your local index.html template
     dest: /var/www/html/index.html  # Destination on the target server
-  notify: restarting httpd
+  notify: restarting httpd   # be carefull while give notify: .... should be same in handlers also
   tags: deploy
 
 
@@ -130,7 +130,7 @@ This file will contain the handler to restart the `httpd` service.
 
 yaml
 ---
-# handlers/main.yml
+# handlers/main.yml be carefull while give notify: .... should be same in handlers also
 
 - name: restart httpd
   service:
@@ -370,6 +370,11 @@ ansible-playbook vaulttest.yaml --vault-password-file password.txt
 
 vaulttest.yaml encrypt lo untadi dani decrypt cheysi password.txt lo visible cheysthundi
 
+ekkada small logice while practising create a samll playbook site.yaml which is decrypt mode
+and insert vars.yaml which is encrypted so create a file which is for password automation purpose and encrypt the pass.txt file then run 
+
+ansible-playbook site.yaml --vault-password-file pass.txt
+
 
 
 1. ansible-vault create secret.yml             ----------> to create secret.yaml
@@ -394,10 +399,10 @@ playbook lo unna vars file lo secret.yaml same password undali
 
 NOTE : if you want to reset the password ,pls use this command ---------> ansible-vault rekey abc.yaml
 
-
 ⚠️ Important
 ❌ There is NO way to recover a lost vault password.
 ✅ Always keep a backup of unencrypted files before encrypting.
+
 
 
 
@@ -428,19 +433,19 @@ Instead of maintaining a static hosts file, Ansible queries the cloud provider�
 
 
 
----
-
  **📌 Prerequisites**
 1. **AWS Account** with proper IAM permissions.
 2. **Ansible installed** on a control node (Linux/macOS).
 3. **Python and Boto3** installed on the control node.
 4. **AWS CLI installed** and configured with access keys.
 
----
+
 
  **1️⃣ Install Required Dependencies**
 Ensure you have the required Python packages installed:
 
+step one:
+---------
 sudo yum update -y
 sudo yum install python3 -y
 sudo yum install python3-pip -y
@@ -455,8 +460,8 @@ pip3 --version
  **2️⃣ Configure AWS Credentials**
 Ansible needs access to AWS. You can set up your credentials using:
 
-AWS cli
--------
+step two AWS cli
+----------------
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 sudo yum install unzip -y
 unzip awscliv2.zip
@@ -465,10 +470,8 @@ sudo ./aws/install
 aws --version
 
 
-
-aws configure
-
-
+step three aws configure
+------------------------
 
 [default]
 aws_access_key_id = YOUR_ACCESS_KEY
@@ -479,15 +482,15 @@ region = ap-south-1
 
 Ensure the AWS collection is installed:
 
-
-ansible-galaxy collection install amazon.aws
+step four ---------> ansible-galaxy collection install amazon.aws
 
 
 
  **4️⃣ Create a Dynamic Inventory File**
 Ansible provides a **dynamic inventory plugin** for AWS.
 
-📌 Create an inventory configuration file:
+📌Step five Create an inventory configuration file
+---------------------------------------------------
 
 mkdir -p ~/ansible/inventory
 cd ~/ansible/inventory
@@ -526,9 +529,9 @@ If everything is set up correctly, you should see a JSON output of AWS EC2 insta
 
 ansible all -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
 
-ansible tag__Hosts_1 -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
+ansible tag___Hosts_1 -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
 
-ansible tag__Hosts_2 -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
+ansible tag___Hosts_2 -i aws_ec2.yaml -m ping -u ec2-user --private-key /home/ec2-user/1111.pem
 
 ansible all -i aws_ec2.yaml -m shell -a "uptime" -u ec2-user --private-key /home/ec2-user/1111.pem
 
@@ -538,17 +541,17 @@ ansible all -i aws_ec2.yaml -m shell -a "uptime" -u ec2-user --private-key /home
 📌 **Create a playbook** `install_apache.yaml`:
 yaml
 - name: Install Apache on AWS EC2
-  hosts: tag__Host_1     # EXACT which is creates in ec2_instance_names group name from ansible-inventory --graph
+  hosts: tag___Host_1     # EXACT which is creates in ec2_instance_names group name from ansible-inventory --graph
   become: yes
 
   tasks:
     - name: Install Apache
-      ansible.builtin.yum:
+      ansible.builtin.yum:  #or use yum
         name: httpd
         state: present
 
     - name: Start Apache Service
-      ansible.builtin.service:
+      ansible.builtin.service:  # or use service
         name: httpd
         state: started
         enabled: yes
