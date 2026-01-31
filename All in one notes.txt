@@ -1,0 +1,13 @@
+install ansible
+---------------
+
+sudo yum install ansible-core -y
+
+vi 1111.pem
+
+sudo chmod 400 /home/ec2-user/1111.pem
+
+copy all server public address and paste in ansible main server
+
+sudo vi /etc/ansible/hosts
+
